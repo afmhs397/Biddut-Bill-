@@ -1,279 +1,1236 @@
+```html
 <!DOCTYPE html>
-<html lang="bn"><head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#1d6fe8">
-<title>বিশ্বাস ভবন — বিদ্যুৎ বিল</title>
-<style>
-:root{--bg:#f3f5f9;--card:#fff;--tx:#1d2433;--mut:#667085;--pri:#1d6fe8;--bd:#d9dee8;--err:#c62828}
-@media (prefers-color-scheme:dark){:root{--bg:#10141c;--card:#1a2130;--tx:#e8ecf4;--mut:#9aa6bd;--bd:#2c3649;--pri:#5b9bff}}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--tx);font-size:16px;line-height:1.6;padding-bottom:env(safe-area-inset-bottom,0px);
- font-family:"Noto Sans Bengali","Nirmala UI","Kalpurush","Siyam Rupali",system-ui,sans-serif}
-header{background:var(--pri);color:#fff;padding:14px 16px;padding-top:calc(14px + env(safe-area-inset-top,0px));text-align:center}
-header h1{margin:0;font-size:1.3rem} header p{margin:0;font-size:.88rem;opacity:.9}
-main{max-width:1000px;margin:0 auto;padding:12px;display:grid;gap:12px;grid-template-columns:1fr 1fr}
-@media (max-width:760px){main{grid-template-columns:1fr}}
-.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:14px}
-.card h2{margin:0 0 8px;font-size:1.05rem} .full{grid-column:1/-1}
-label{display:block;font-size:.88rem;color:var(--mut);margin:8px 0 3px}
-input[type=text],input[type=number]{width:100%;padding:11px 12px;font-size:16px;font-family:inherit;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx)}
-.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.chk{display:flex;gap:8px;align-items:center;margin-top:12px;color:var(--tx)}
-.btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
-button{flex:1 1 110px;padding:11px;font-size:15px;font-family:inherit;border:0;border-radius:8px;background:var(--pri);color:#fff}
-button.sec{background:transparent;color:var(--pri);border:1px solid var(--pri)}
-button.sm{flex:0 0 auto;padding:5px 10px;font-size:13px} button.del{background:var(--err)}
-.hint{color:var(--mut)} .err{color:var(--err);font-weight:600}
-.head{text-align:center;border-bottom:2px dashed var(--bd);padding-bottom:8px;margin-bottom:8px}
-.head b{font-size:1.3rem;display:block}
-table{width:100%;border-collapse:collapse;font-size:.93rem}
-td,th{padding:6px 4px;border-bottom:1px solid var(--bd)} th{text-align:left;color:var(--mut)}
-.n{text-align:right;white-space:nowrap} .scroll{overflow-x:auto}
-.tot td{font-weight:700;font-size:1.1rem;border-top:2px solid var(--tx);border-bottom:0}
-.info{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:.93rem}
-@media print{body{background:#fff;color:#000} header,.no-print{display:none!important}
- main{display:block;padding:0} .card{border:0;padding:0} .card:not(.billcard){display:none}}
-#ov{display:none;position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.6);overflow:auto;padding:12px;padding-top:calc(12px + env(safe-area-inset-top,0px))}
-#ov .box{max-width:560px;margin:0 auto;background:var(--card);border-radius:12px;padding:14px}
-#ov img{width:100%;border:1px solid var(--bd);border-radius:8px;background:#fff}
-a.btn{flex:1 1 110px;padding:11px;font-size:15px;border-radius:8px;background:var(--pri);color:#fff;text-align:center;text-decoration:none}
-@media print{#ov{display:none!important}}
-</style></head><body>
-<header><h1>বিশ্বাস ভবন</h1><p>ভাড়াটিয়ার বিদ্যুৎ বিল</p></header>
-<main>
-<section class="card no-print">
- <h2>ইউনিট দিন</h2>
- <label for="name">ভাড়াটিয়ার নাম / ফ্ল্যাট</label>
- <input type="text" id="name" list="tenants" autocomplete="off" placeholder="যেমন: ২য় তলা - রহিম">
- <datalist id="tenants"></datalist>
- <div class="two">
-  <div><label for="prev">পূর্বের ইউনিট</label><input type="number" id="prev" inputmode="decimal" step="any" min="0"></div>
-  <div><label for="curr">বর্তমান ইউনিট</label><input type="number" id="curr" inputmode="decimal" step="any" min="0"></div>
- </div>
- <div class="two">
-  <div><label for="vat">ভ্যাট (%)</label><input type="number" id="vat" inputmode="decimal" step="any" value="5"></div>
-  <div><label for="other">অন্যান্য চার্জ (টাকা)</label><input type="number" id="other" inputmode="decimal" step="any" value="0"></div>
- </div>
- <label class="chk"><input type="checkbox" id="demand"> ডিমান্ড চার্জ ধরুন (লোড × ৪২ টাকা)</label>
- <div id="loadbox" style="display:none"><label for="load">লোড (কিলোওয়াট)</label><input type="number" id="load" inputmode="decimal" step="any" value="0"></div>
- <div class="btns">
-  <button id="saveBtn">সংরক্ষণ</button>
-  <button class="sec" id="printBtn">🖨 PDF প্রিন্ট</button>
-  <button class="sec" id="shareBtn">PDF শেয়ার</button>
- </div>
-</section>
-<section class="card billcard"><h2 class="no-print">বিল</h2>
- <div id="bill"><p class="hint">পূর্বের ও বর্তমান ইউনিট লিখলেই বিল এখানে দেখাবে।</p></div></section>
-<section class="card full no-print">
- <h2>সংরক্ষিত হিসাব</h2>
- <div class="scroll"><table><thead><tr><th>তারিখ</th><th>নাম</th><th class="n">পূর্বের</th><th class="n">বর্তমান</th><th class="n">ইউনিট</th><th class="n">বিল</th><th></th></tr></thead><tbody id="recs"></tbody></table></div>
- <div class="btns"><button class="sec" id="csvBtn">CSV এক্সপোর্ট</button></div>
-</section>
-</main>
-<div id="ov"><div class="box">
- <h2 style="margin:0 0 6px;font-size:1.05rem">বিল PDF প্রস্তুত</h2>
- <p class="hint" style="margin:0 0 10px;font-size:.9rem">ডাউনলোড না হলে নিচের ছবিটি চেপে ধরে "ছবি সেভ করুন" দিন, অথবা স্ক্রিনশট নিন।</p>
- <img id="pv" alt="বিল">
- <div class="btns"><a class="btn" id="dl" href="#">PDF ডাউনলোড</a><a class="btn" id="dl2" href="#">বিকল্প ডাউনলোড</a><button class="sec" id="ovClose">বন্ধ করুন</button></div>
-</div></div>
-<script>
-// ===== সেটিংস =====
-var HOUSE = "বিশ্বাস ভবন", DEMAND_RATE = 42, LIFE_LIMIT = 50, LIFE_RATE = 4.63;
-var SLABS = [["প্রথম ধাপ (০-৭৫)",75,5.26],["দ্বিতীয় ধাপ (৭৬-২০০)",125,8.50],["তৃতীয় ধাপ (২০১-৩০০)",100,9.10],
- ["চতুর্থ ধাপ (৩০১-৪০০)",100,9.62],["পঞ্চম ধাপ (৪০১-৬০০)",200,15.01],["ষষ্ঠ ধাপ (৬০০+)",null,17.35]];
-// ===================
-var $ = function(id){return document.getElementById(id);};
-var f2 = function(n){return Number(n).toFixed(2);};
-var r2 = function(n){return Math.round(n*100)/100;};
-var esc = function(s){return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});};
-var current = null, records = [];
+<html lang="bn">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#1d6fe8">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="বিদ্যুৎ বিল">
+  <title>বিশ্বাস ভবন — বিদ্যুৎ বিল</title>
 
-function store(){ try{ localStorage.setItem('bills', JSON.stringify(records)); }catch(e){} }
-function load(){ try{ records = JSON.parse(localStorage.getItem('bills')||'[]'); }catch(e){ records = []; } }
+  <!-- Inline SVG App Icon & Apple Touch Icon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='112' fill='%231d6fe8'/%3E%3Cpath d='M288 80L144 280h112l-32 152 144-200H256l32-152z' fill='%23ffdf2b'/%3E%3C/svg%3E">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='112' fill='%231d6fe8'/%3E%3Cpath d='M288 80L144 280h112l-32 152 144-200H256l32-152z' fill='%23ffdf2b'/%3E%3C/svg%3E">
 
-function energy(u){
-  if(u<=0) return {total:0, rows:[]};
-  if(u<=LIFE_LIMIT) return {total:u*LIFE_RATE, rows:[{name:'লাইফ লাইন (০-৫০)',units:u,rate:LIFE_RATE,amount:r2(u*LIFE_RATE)}]};
-  var rem=u, total=0, rows=[];
-  for(var i=0;i<SLABS.length && rem>0;i++){
-    var used = SLABS[i][1]===null ? rem : Math.min(rem,SLABS[i][1]);
-    var amt = used*SLABS[i][2];
-    rows.push({name:SLABS[i][0],units:r2(used),rate:SLABS[i][2],amount:r2(amt)});
-    total+=amt; rem-=used;
-  }
-  return {total:total, rows:rows};
-}
-function makeBill(){
-  var prev=parseFloat($('prev').value), curr=parseFloat($('curr').value);
-  if(isNaN(prev)||isNaN(curr)) return null;
-  if(curr<prev) return {error:'বর্তমান ইউনিট পূর্বের ইউনিটের চেয়ে কম হতে পারে না'};
-  var vatPct=parseFloat($('vat').value)||0, other=parseFloat($('other').value)||0, load=parseFloat($('load').value)||0;
-  var units=r2(curr-prev), e=energy(units);
-  var demand=$('demand').checked ? load*DEMAND_RATE : 0;
-  var vat=(e.total+demand)*vatPct/100;
-  var d=new Date();
-  return {name:$('name').value.trim()||'ভাড়াটিয়া',
-    date:('0'+d.getDate()).slice(-2)+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+d.getFullYear(),
-    prev:prev,curr:curr,units:units,rows:e.rows,vatPct:vatPct,energy:r2(e.total),demand:r2(demand),
-    vat:r2(vat),other:r2(other),total:r2(e.total+demand+vat+other)};
-}
-function renderBill(r){
-  var rows=r.rows.map(function(x){return '<tr><td>'+esc(x.name)+'</td><td class="n">'+x.units+'</td><td class="n">'+f2(x.rate)+'</td><td class="n">'+f2(x.amount)+'</td></tr>';}).join('');
-  $('bill').innerHTML='<div class="head"><b>'+HOUSE+'</b>বিদ্যুৎ বিল</div>'+
-   '<div class="info"><span>ভাড়াটিয়া: <b>'+esc(r.name)+'</b></span><span>তারিখ: '+esc(r.date)+'</span></div>'+
-   '<div class="info"><span>পূর্বের: '+r.prev+'</span><span>বর্তমান: '+r.curr+'</span><span>ব্যবহার: <b>'+r.units+' ইউনিট</b></span></div>'+
-   '<div class="scroll"><table><thead><tr><th>ধাপ</th><th class="n">ইউনিট</th><th class="n">রেট</th><th class="n">টাকা</th></tr></thead><tbody>'+rows+
-   '<tr><td colspan="3">এনার্জি চার্জ</td><td class="n">'+f2(r.energy)+'</td></tr>'+
-   (r.demand?'<tr><td colspan="3">ডিমান্ড চার্জ</td><td class="n">'+f2(r.demand)+'</td></tr>':'')+
-   '<tr><td colspan="3">ভ্যাট ('+r.vatPct+'%)</td><td class="n">'+f2(r.vat)+'</td></tr>'+
-   (r.other?'<tr><td colspan="3">অন্যান্য</td><td class="n">'+f2(r.other)+'</td></tr>':'')+
-   '<tr class="tot"><td colspan="3">সর্বমোট বিল</td><td class="n">'+f2(r.total)+' ৳</td></tr></tbody></table></div>';
-}
-function billText(r){
-  var t=HOUSE+'\nবিদ্যুৎ বিল\nভাড়াটিয়া: '+r.name+'\nতারিখ: '+r.date+'\nপূর্বের: '+r.prev+' | বর্তমান: '+r.curr+'\nব্যবহার: '+r.units+' ইউনিট\n';
-  r.rows.forEach(function(x){t+=x.name+': '+x.units+' x '+f2(x.rate)+' = '+f2(x.amount)+'\n';});
-  t+='এনার্জি চার্জ: '+f2(r.energy)+'\n';
-  if(r.demand) t+='ডিমান্ড চার্জ: '+f2(r.demand)+'\n';
-  t+='ভ্যাট ('+r.vatPct+'%): '+f2(r.vat)+'\n';
-  if(r.other) t+='অন্যান্য: '+f2(r.other)+'\n';
-  return t+'সর্বমোট বিল: '+f2(r.total)+' টাকা';
-}
-function calc(){
-  $('loadbox').style.display=$('demand').checked?'block':'none';
-  var r=makeBill(); current=null;
-  if(!r){ $('bill').innerHTML='<p class="hint">পূর্বের ও বর্তমান ইউনিট লিখলেই বিল এখানে দেখাবে।</p>'; return; }
-  if(r.error){ $('bill').innerHTML='<p class="err">'+r.error+'</p>'; return; }
-  current=r; renderBill(r);
-}
-function renderRecords(){
-  var last={};
-  records.forEach(function(r){last[r.name]=r.curr;});
-  $('tenants').innerHTML=Object.keys(last).map(function(n){return '<option value="'+esc(n)+'">';}).join('');
-  window.lastCurr=last;
-  $('recs').innerHTML=records.slice().reverse().map(function(r){
-    return '<tr><td>'+esc(r.date)+'</td><td>'+esc(r.name)+'</td><td class="n">'+r.prev+'</td><td class="n">'+r.curr+'</td><td class="n">'+r.units+
-    '</td><td class="n">'+f2(r.total)+'</td><td class="n"><button class="sm sec" onclick="view('+r.id+')">দেখুন</button> <button class="sm del" onclick="del('+r.id+')">মুছুন</button></td></tr>';
-  }).join('')||'<tr><td colspan="7" class="hint">এখনো কিছু সংরক্ষণ করা হয়নি</td></tr>';
-}
-function view(id){ var r=records.filter(function(x){return x.id===id;})[0]; if(r){current=r;renderBill(r);window.scrollTo(0,0);} }
-function del(id){ if(confirm('এই হিসাবটি মুছে ফেলবেন?')){ records=records.filter(function(x){return x.id!==id;}); store(); renderRecords(); } }
+  <style>
+    :root {
+      --bg: #f3f5f9;
+      --card: #ffffff;
+      --tx: #1d2433;
+      --mut: #667085;
+      --pri: #1d6fe8;
+      --pri-hover: #1558bd;
+      --bd: #d9dee8;
+      --err: #c62828;
+      --ok: #15803d;
+      --pos-bg: #fffbeb;
+    }
 
-$('name').addEventListener('change',function(){
-  var n=$('name').value.trim();
-  if(window.lastCurr && n in window.lastCurr){ $('prev').value=window.lastCurr[n]; $('curr').value=''; $('curr').focus(); calc(); }
-});
-['prev','curr','vat','other','load','demand'].forEach(function(id){$(id).addEventListener('input',calc);});
-$('saveBtn').addEventListener('click',function(){
-  calc();
-  if(!current||current.id){ alert('আগে পূর্বের ও বর্তমান ইউনিট সঠিকভাবে লিখুন'); return; }
-  current.id=Date.now(); records.push(current); store(); renderRecords();
-  $('prev').value=current.curr; $('curr').value='';
-});
-// ===== PDF তৈরি (কোনো লাইব্রেরি ছাড়া, অফলাইনে কাজ করে) =====
-var FONT='"Noto Sans Bengali","Nirmala UI","Kalpurush","Siyam Rupali",sans-serif';
-function billCanvas(r){
-  var W=794,S=2,pad=50,lh=30,c=document.createElement('canvas');
-  c.width=W*S; c.height=1400*S;
-  var x=c.getContext('2d'); x.scale(S,S); x.fillStyle='#fff'; x.fillRect(0,0,W,1400); x.fillStyle='#000';
-  function t(s,px,py,sz,bold,al){ x.font=(bold?'bold ':'')+sz+'px '+FONT; x.textAlign=al||'left'; x.fillText(String(s),px,py); }
-  function ln(py,w){ x.strokeStyle='#777'; x.lineWidth=w||1; x.beginPath(); x.moveTo(pad,py); x.lineTo(W-pad,py); x.stroke(); }
-  var y=70;
-  t(HOUSE,W/2,y,36,true,'center'); y+=38; t('বিদ্যুৎ বিল',W/2,y,22,false,'center'); y+=20; ln(y); y+=36;
-  t('ভাড়াটিয়া: '+r.name,pad,y,19,true); t('তারিখ: '+r.date,W-pad,y,19,false,'right'); y+=34;
-  t('পূর্বের: '+r.prev,pad,y,19); t('বর্তমান: '+r.curr,W/2,y,19,false,'center'); t('ব্যবহার: '+r.units+' ইউনিট',W-pad,y,19,true,'right'); y+=20; ln(y); y+=32;
-  t('ধাপ',pad,y,17,true); t('ইউনিট',470,y,17,true,'right'); t('রেট',590,y,17,true,'right'); t('টাকা',W-pad,y,17,true,'right'); y+=12; ln(y); y+=lh;
-  r.rows.forEach(function(q){ t(q.name,pad,y,17); t(q.units,470,y,17,false,'right'); t(f2(q.rate),590,y,17,false,'right'); t(f2(q.amount),W-pad,y,17,false,'right'); y+=lh; });
-  ln(y-lh+10); y+=4;
-  function sum(l,v){ t(l,pad,y,18); t(f2(v),W-pad,y,18,false,'right'); y+=lh; }
-  sum('এনার্জি চার্জ',r.energy);
-  if(r.demand) sum('ডিমান্ড চার্জ',r.demand);
-  sum('ভ্যাট ('+r.vatPct+'%)',r.vat);
-  if(r.other) sum('অন্যান্য',r.other);
-  y+=2; ln(y-lh+12,2); y+=10;
-  t('সর্বমোট বিল',pad,y,24,true); t(f2(r.total)+' টাকা',W-pad,y,24,true,'right'); y+=16; ln(y,2);
-  var h=y+50, o=document.createElement('canvas'); o.width=W*S; o.height=h*S;
-  var ox=o.getContext('2d'); ox.fillStyle='#fff'; ox.fillRect(0,0,o.width,o.height);
-  ox.drawImage(c,0,0,W*S,h*S,0,0,W*S,h*S);
-  return o;
-}
-function makePdf(cv){
-  var bin=atob(cv.toDataURL('image/jpeg',0.92).split(',')[1]), jpg=new Uint8Array(bin.length);
-  for(var i=0;i<bin.length;i++) jpg[i]=bin.charCodeAt(i);
-  var pw=595.28, ph=841.89, iw=pw, ih=pw*cv.height/cv.width;
-  if(ih>ph){ ih=ph; iw=ph*cv.width/cv.height; }
-  var enc=new TextEncoder(), parts=[], off=0, xr=[];
-  function add(d){ if(typeof d==='string') d=enc.encode(d); parts.push(d); off+=d.length; }
-  function obj(n,head,body){ xr[n]=off; add(n+' 0 obj\n'+head); if(body){ add('\nstream\n'); add(body); add('\nendstream'); } add('\nendobj\n'); }
-  add('%PDF-1.4\n');
-  obj(1,'<< /Type /Catalog /Pages 2 0 R >>');
-  obj(2,'<< /Type /Pages /Kids [3 0 R] /Count 1 >>');
-  obj(3,'<< /Type /Page /Parent 2 0 R /MediaBox [0 0 '+pw+' '+ph+'] /Resources << /XObject << /Im0 4 0 R >> >> /Contents 5 0 R >>');
-  obj(4,'<< /Type /XObject /Subtype /Image /Width '+cv.width+' /Height '+cv.height+' /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length '+jpg.length+' >>',jpg);
-  var cs='q '+iw.toFixed(2)+' 0 0 '+ih.toFixed(2)+' '+((pw-iw)/2).toFixed(2)+' '+(ph-ih).toFixed(2)+' cm /Im0 Do Q';
-  obj(5,'<< /Length '+cs.length+' >>',cs);
-  var xo=off; add('xref\n0 6\n0000000000 65535 f \n');
-  for(i=1;i<=5;i++) add(('0000000000'+xr[i]).slice(-10)+' 00000 n \n');
-  add('trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n'+xo+'\n%%EOF');
-  return new Blob(parts,{type:'application/pdf'});
-}
-function pdfFile(){
-  if(!current){ alert('আগে বিল তৈরি করুন'); return null; }
-  try{
-    window.lastCv=billCanvas(current);
-    var nm='bill_'+current.name.replace(/[^\w\u0980-\u09FF]+/g,'_')+'_'+current.date+'.pdf';
-    var blob=makePdf(window.lastCv), f;
-    try{ f=new File([blob],nm,{type:'application/pdf'}); }catch(e){ f=blob; f.name=nm; }
-    return f;
-  }catch(e){ alert('PDF তৈরি করা যায়নি: '+(e&&e.message?e.message:e)); return null; }
-}
-function b64(blob){ return new Promise(function(res){ var r=new FileReader(); r.onload=function(){res(String(r.result).split(',')[1]);}; r.readAsDataURL(blob); }); }
-function cap(n){ return window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins[n]; }
-function showOverlay(f){
-  $('pv').src=window.lastCv.toDataURL('image/jpeg',0.9);
-  var a=$('dl'); a.href=URL.createObjectURL(f); a.download=f.name; a.target='_blank';
-  var a2=$('dl2'); a2.download=f.name; a2.target='_blank';
-  b64(f).then(function(d){ a2.href='data:application/pdf;base64,'+d; });
-  $('ov').style.display='block';
-}
-$('ovClose').addEventListener('click',function(){ $('ov').style.display='none'; });
-function printPlugin(){
-  var C=window.Capacitor;
-  if(!C || !(C.isNativePlatform ? C.isNativePlatform() : false)) return null;
-  return C.registerPlugin ? C.registerPlugin('PdfPrint') : (C.Plugins && C.Plugins.PdfPrint);
-}
-$('printBtn').addEventListener('click',async function(){
-  var f=pdfFile(); if(!f) return;
-  try{
-    var P=printPlugin();
-    if(P){ await P.print({data:await b64(f),name:f.name}); return; }   // অ্যান্ড্রয়েডের নিজস্ব প্রিন্ট স্ক্রিন
-    if(cap('Filesystem')){
-      await cap('Filesystem').writeFile({path:f.name,data:await b64(f),directory:'DOCUMENTS'});
-      alert('PDF সেভ হয়েছে (Documents ফোল্ডারে)। ফাইলটি খুলে প্রিন্ট দিন।'); return;
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #10141c;
+        --card: #1a2130;
+        --tx: #e8ecf4;
+        --mut: #9aa6bd;
+        --bd: #2c3649;
+        --pri: #5b9bff;
+        --pri-hover: #4285f4;
+        --pos-bg: #232a3b;
+      }
     }
-  }catch(e){ alert('প্রিন্ট চালু করা যায়নি: '+(e&&e.message?e.message:e)); }
-  showOverlay(f);
-});
-$('shareBtn').addEventListener('click',async function(){
-  var f=pdfFile(); if(!f) return;
-  try{
-    if(cap('Filesystem') && cap('Share')){
-      await cap('Filesystem').writeFile({path:f.name,data:await b64(f),directory:'CACHE'});
-      var u=await cap('Filesystem').getUri({path:f.name,directory:'CACHE'});
-      await cap('Share').share({title:HOUSE+' বিদ্যুৎ বিল',url:u.uri}); return;
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--tx);
+      font-size: 16px;
+      line-height: 1.6;
+      padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+      font-family: "Noto Sans Bengali", "Nirmala UI", "Kalpurush", "Siyam Rupali", system-ui, sans-serif;
     }
-    if(navigator.canShare && navigator.canShare({files:[f]})){
-      await navigator.share({files:[f],title:HOUSE+' বিদ্যুৎ বিল'}); return;
+
+    /* Header & PWA Status Bar */
+    header {
+      background: var(--pri);
+      color: #fff;
+      padding: 14px 16px;
+      padding-top: calc(14px + env(safe-area-inset-top, 0px));
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
     }
-  }catch(e){ if(e && e.name==='AbortError') return; }
-  showOverlay(f);
-});
-$('csvBtn').addEventListener('click',function(){
-  if(!records.length){alert('এখনো কিছু সংরক্ষণ করা হয়নি');return;}
-  var rows=[['তারিখ','নাম','পূর্বের','বর্তমান','ইউনিট','এনার্জি','ডিমান্ড','ভ্যাট','অন্যান্য','মোট']];
-  records.forEach(function(r){rows.push([r.date,'"'+r.name.replace(/"/g,'""')+'"',r.prev,r.curr,r.units,r.energy,r.demand,r.vat,r.other,r.total]);});
-  var blob=new Blob(['\ufeff'+rows.map(function(x){return x.join(',');}).join('\n')],{type:'text/csv;charset=utf-8'});
-  var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='bidyut_bill.csv'; document.body.appendChild(a); a.click(); a.remove();
-});
-load(); renderRecords();
-</script></body></html>
+
+    .hdr-title { text-align: left; }
+    header h1 { margin: 0; font-size: 1.3rem; line-height: 1.25; }
+    header p { margin: 0; font-size: 0.85rem; opacity: 0.92; }
+
+    .hdr-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .badge {
+      font-size: 0.75rem;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.2);
+      color: #fff;
+      white-space: nowrap;
+    }
+
+    #installBtn {
+      display: none;
+      background: #fff;
+      color: #1d6fe8;
+      font-weight: 700;
+      font-size: 0.82rem;
+      padding: 6px 12px;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      white-space: nowrap;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    }
+
+    main {
+      max-width: 1020px;
+      margin: 0 auto;
+      padding: 12px;
+      display: grid;
+      gap: 12px;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    @media (max-width: 760px) {
+      main { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--bd);
+      border-radius: 14px;
+      padding: 16px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    }
+
+    .card h2 {
+      margin: 0 0 10px;
+      font-size: 1.08rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .full { grid-column: 1 / -1; }
+
+    label {
+      display: block;
+      font-size: 0.88rem;
+      color: var(--mut);
+      margin: 8px 0 4px;
+    }
+
+    input[type=text], input[type=number], select {
+      width: 100%;
+      padding: 11px 12px;
+      font-size: 16px;
+      font-family: inherit;
+      border: 1px solid var(--bd);
+      border-radius: 10px;
+      background: var(--bg);
+      color: var(--tx);
+    }
+
+    input:focus, select:focus {
+      outline: 2px solid var(--pri);
+      border-color: transparent;
+    }
+
+    .two {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .chk {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-top: 12px;
+      color: var(--tx);
+      cursor: pointer;
+    }
+
+    .chk input {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--pri);
+    }
+
+    .btns {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    button {
+      flex: 1 1 115px;
+      padding: 11px 12px;
+      font-size: 15px;
+      font-weight: 600;
+      font-family: inherit;
+      border: 0;
+      border-radius: 10px;
+      background: var(--pri);
+      color: #fff;
+      cursor: pointer;
+      transition: opacity 0.15s, transform 0.1s;
+    }
+
+    button:active { transform: scale(0.98); }
+    button.sec { background: transparent; color: var(--pri); border: 1.5px solid var(--pri); }
+    button.pos { background: #0f766e; color: #fff; }
+    button.sm { flex: 0 0 auto; padding: 6px 10px; font-size: 13px; border-radius: 8px; }
+    button.del { background: var(--err); }
+
+    .hint { color: var(--mut); }
+    .err { color: var(--err); font-weight: 600; }
+
+    /* Bill Preview Styling */
+    .head {
+      text-align: center;
+      border-bottom: 2px dashed var(--bd);
+      padding-bottom: 8px;
+      margin-bottom: 10px;
+    }
+
+    .head b { font-size: 1.35rem; display: block; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.93rem;
+    }
+
+    td, th {
+      padding: 6px 4px;
+      border-bottom: 1px solid var(--bd);
+    }
+
+    th { text-align: left; color: var(--mut); }
+    .n { text-align: right; white-space: nowrap; }
+    .scroll { overflow-x: auto; }
+
+    .tot td {
+      font-weight: 700;
+      font-size: 1.12rem;
+      border-top: 2px solid var(--tx);
+      border-bottom: 0;
+      padding-top: 8px;
+    }
+
+    .info {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+      font-size: 0.93rem;
+      margin-bottom: 4px;
+    }
+
+    /* Modals & Overlays */
+    .overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 60;
+      background: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(2px);
+      overflow: auto;
+      padding: 16px;
+      padding-top: calc(20px + env(safe-area-inset-top, 0px));
+    }
+
+    .overlay .box {
+      max-width: 540px;
+      margin: 0 auto;
+      background: var(--card);
+      border: 1px solid var(--bd);
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
+    }
+
+    #ov img {
+      width: 100%;
+      border: 1px solid var(--bd);
+      border-radius: 10px;
+      background: #fff;
+    }
+
+    a.btn {
+      flex: 1 1 115px;
+      padding: 11px;
+      font-size: 15px;
+      font-weight: 600;
+      border-radius: 10px;
+      background: var(--pri);
+      color: #fff;
+      text-align: center;
+      text-decoration: none;
+    }
+
+    /* POS Receipt Preview Box */
+    .pos-preview-wrap {
+      background: #e5e7eb;
+      padding: 12px;
+      border-radius: 10px;
+      display: flex;
+      justify-content: center;
+      max-height: 55vh;
+      overflow-y: auto;
+    }
+
+    .pos-paper {
+      background: #fff;
+      color: #000;
+      padding: 12px 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      font-family: "Noto Sans Bengali", monospace, sans-serif;
+      transition: width 0.2s;
+    }
+
+    .pos-paper.w58 { width: 220px; font-size: 12px; line-height: 1.35; }
+    .pos-paper.w80 { width: 302px; font-size: 13.5px; line-height: 1.4; }
+
+    .pos-center { text-align: center; }
+    .pos-hr { border-top: 1px dashed #000; margin: 6px 0; }
+    .pos-row { display: flex; justify-content: space-between; gap: 4px; }
+    .pos-table { width: 100%; border-collapse: collapse; margin: 4px 0; }
+    .pos-table th, .pos-table td { border: none; padding: 2px 0; font-size: inherit; color: #000; }
+    .pos-table th { border-bottom: 1px dashed #000; }
+
+    /* Print Media Rules (Supports both Standard PDF/A4 and Thermal POS Widths) */
+    @media print {
+      body {
+        background: #fff !important;
+        color: #000 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+      header, .no-print, .overlay { display: none !important; }
+      main { display: block; padding: 0; max-width: 100%; }
+      .card { border: 0; padding: 0; box-shadow: none; background: #fff !important; }
+      .card:not(.billcard) { display: none !important; }
+
+      /* Thermal 58mm Print Mode */
+      body.print-pos-58 {
+        width: 58mm !important;
+        font-size: 11px !important;
+        line-height: 1.3 !important;
+      }
+      body.print-pos-58 .billcard { width: 54mm !important; margin: 0 auto; }
+      body.print-pos-58 td, body.print-pos-58 th { padding: 2px 1px !important; font-size: 10.5px !important; }
+      body.print-pos-58 .head b { font-size: 14px !important; }
+      body.print-pos-58 .tot td { font-size: 12.5px !important; }
+
+      /* Thermal 80mm Print Mode */
+      body.print-pos-80 {
+        width: 80mm !important;
+        font-size: 12.5px !important;
+        line-height: 1.35 !important;
+      }
+      body.print-pos-80 .billcard { width: 74mm !important; margin: 0 auto; }
+      body.print-pos-80 td, body.print-pos-80 th { padding: 3px 2px !important; font-size: 12px !important; }
+      body.print-pos-80 .head b { font-size: 16px !important; }
+      body.print-pos-80 .tot td { font-size: 14px !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="hdr-title">
+      <h1>বিশ্বাস ভবন</h1>
+      <p>ভাড়াটিয়ার বিদ্যুৎ বিল (PWA)</p>
+    </div>
+    <div class="hdr-actions">
+      <span id="netStatus" class="badge">অফলাইন প্রস্তুত</span>
+      <button id="installBtn">📲 অ্যাপ ইনস্টল</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- Input Section -->
+    <section class="card no-print">
+      <h2>ইউনিট দিন</h2>
+      <label for="name">ভাড়াটিয়ার নাম / ফ্ল্যাট</label>
+      <input type="text" id="name" list="tenants" autocomplete="off" placeholder="যেমন: ২য় তলা - রহিম">
+      <datalist id="tenants"></datalist>
+
+      <div class="two">
+        <div>
+          <label for="prev">পূর্বের ইউনিট</label>
+          <input type="number" id="prev" inputmode="decimal" step="any" min="0">
+        </div>
+        <div>
+          <label for="curr">বর্তমান ইউনিট</label>
+          <input type="number" id="curr" inputmode="decimal" step="any" min="0">
+        </div>
+      </div>
+
+      <div class="two">
+        <div>
+          <label for="vat">ভ্যাট (%)</label>
+          <input type="number" id="vat" inputmode="decimal" step="any" value="5">
+        </div>
+        <div>
+          <label for="other">অন্যান্য চার্জ (টাকা)</label>
+          <input type="number" id="other" inputmode="decimal" step="any" value="0">
+        </div>
+      </div>
+
+      <label class="chk">
+        <input type="checkbox" id="demand"> ডিমান্ড চার্জ ধরুন (লোড × ৪২ টাকা)
+      </label>
+
+      <div id="loadbox" style="display:none">
+        <label for="load">লোড (কিলোওয়াট)</label>
+        <input type="number" id="load" inputmode="decimal" step="any" value="0">
+      </div>
+
+      <div class="btns">
+        <button id="saveBtn">💾 সংরক্ষণ</button>
+        <button class="sec" id="printBtn">📄 PDF প্রিন্ট</button>
+        <button class="pos" id="posBtn">🧾 POS প্রিন্ট</button>
+        <button class="sec" id="shareBtn">📤 শেয়ার</button>
+      </div>
+    </section>
+
+    <!-- Live Bill Preview Section -->
+    <section class="card billcard">
+      <h2 class="no-print">বিল প্রিভিউ</h2>
+      <div id="bill">
+        <p class="hint">পূর্বের ও বর্তমান ইউনিট লিখলেই বিল এখানে দেখাবে।</p>
+      </div>
+    </section>
+
+    <!-- Saved Records Section -->
+    <section class="card full no-print">
+      <h2>সংরক্ষিত হিসাব</h2>
+      <div class="scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>তারিখ</th>
+              <th>নাম</th>
+              <th class="n">পূর্বের</th>
+              <th class="n">বর্তমান</th>
+              <th class="n">ইউনিট</th>
+              <th class="n">বিল</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="recs"></tbody>
+        </table>
+      </div>
+      <div class="btns">
+        <button class="sec" id="csvBtn">📊 CSV এক্সপোর্ট</button>
+      </div>
+    </section>
+  </main>
+
+  <!-- PDF Overlay Modal -->
+  <div id="ov" class="overlay">
+    <div class="box">
+      <h2 style="margin:0 0 6px;font-size:1.08rem">বিল PDF প্রস্তুত</h2>
+      <p class="hint" style="margin:0 0 10px;font-size:.9rem">ডাউনলোড না হলে নিচের ছবিটি চেপে ধরে "ছবি সেভ করুন" দিন, অথবা সিস্টেম প্রিন্ট ব্যবহার করুন।</p>
+      <img id="pv" alt="বিল">
+      <div class="btns">
+        <a class="btn" id="dl" href="#">PDF ডাউনলোড</a>
+        <a class="btn" id="dl2" href="#">বিকল্প ডাউনলোড</a>
+        <button class="sec" id="sysPdfPrintBtn">🖨️ সিস্টেম প্রিন্ট</button>
+        <button class="sec" id="ovClose">বন্ধ করুন</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- POS Thermal Printer Modal -->
+  <div id="posOv" class="overlay">
+    <div class="box">
+      <h2 style="margin:0 0 6px;font-size:1.08rem">🧾 POS থার্মাল প্রিন্টার</h2>
+      <p class="hint" style="margin:0 0 10px;font-size:.88rem">রিসিট পেপারের সাইজ নির্বাচন করুন এবং প্রিন্ট দিন। ব্লুটুথ POS প্রিন্টারের জন্য সরাসরি প্রিন্ট বা ইমেজ শেয়ার ব্যবহার করতে পারেন।</p>
+
+      <div style="margin-bottom:10px">
+        <label for="posSize">পেপারের প্রস্থ (Paper Width)</label>
+        <select id="posSize">
+          <option value="58">58mm (ছোট থার্মাল রোল - ২ ইঞ্চি)</option>
+          <option value="80">80mm (বড় থার্মাল রোল - ৩ ইঞ্চি)</option>
+        </select>
+      </div>
+
+      <div class="pos-preview-wrap">
+        <div id="posPaper" class="pos-paper w58"></div>
+      </div>
+
+      <div class="btns">
+        <button class="pos" id="posSysPrintBtn">🖨️ POS প্রিন্ট করুন</button>
+        <button class="sec" id="posBtBtn">📶 ব্লুটুথ (ESC/POS)</button>
+        <button class="sec" id="posImgShareBtn">🖼️ রিসিট ইমেজ শেয়ার</button>
+        <button class="sec" id="posCloseBtn">বন্ধ করুন</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Custom Alert / Confirm Dialog Modal -->
+  <div id="msgModal" class="overlay" style="z-index: 80;">
+    <div class="box" style="max-width: 380px;">
+      <h2 id="msgTitle" style="margin:0 0 8px;font-size:1.05rem">বার্তা</h2>
+      <p id="msgText" style="margin:0 0 14px;font-size:.95rem"></p>
+      <div class="btns" id="msgBtns"></div>
+    </div>
+  </div>
+
+  <script>
+    // ==========================================
+    // ১. PWA Manifest এবং Service Worker নিবন্ধন
+    // ==========================================
+    (function setupPWA() {
+      const manifest = {
+        name: "বিশ্বাস ভবন — বিদ্যুৎ বিল",
+        short_name: "বিদ্যুৎ বিল",
+        description: "ভাড়াটিয়ার বিদ্যুৎ বিল হিসাব, PDF এবং POS প্রিন্টার অ্যাপ",
+        start_url: "./",
+        display: "standalone",
+        background_color: "#f3f5f9",
+        theme_color: "#1d6fe8",
+        orientation: "portrait-primary",
+        icons: [
+          {
+            src: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='112' fill='%231d6fe8'/%3E%3Cpath d='M288 80L144 280h112l-32 152 144-200H256l32-152z' fill='%23ffdf2b'/%3E%3C/svg%3E",
+            sizes: "192x192 512x512",
+            type: "image/svg+xml",
+            purpose: "any maskable"
+          }
+        ]
+      };
+
+      try {
+        const manifestBlob = new Blob([JSON.stringify(manifest)], { type: 'application/manifest+json' });
+        const manifestURL = URL.createObjectURL(manifestBlob);
+        const link = document.createElement('link');
+        link.rel = 'manifest';
+        link.href = manifestURL;
+        document.head.appendChild(link);
+      } catch (e) {}
+
+      // Inline Service Worker for Offline Caching
+      if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
+        const swCode = `
+          const CACHE_NAME = 'biswas-bhaban-bill-v1';
+          self.addEventListener('install', (e) => {
+            self.skipWaiting();
+            e.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(['./'])));
+          });
+          self.addEventListener('activate', (e) => {
+            e.waitUntil(clients.claim());
+          });
+          self.addEventListener('fetch', (e) => {
+            if (e.request.method !== 'GET') return;
+            e.respondWith(
+              caches.match(e.request).then((cached) => {
+                const fetched = fetch(e.request).then((res) => {
+                  if (res && res.status === 200) {
+                    const clone = res.clone();
+                    caches.open(CACHE_NAME).then((cache) => cache.put(e.request, clone));
+                  }
+                  return res;
+                }).catch(() => cached);
+                return cached || fetched;
+              })
+            );
+          });
+        `;
+        try {
+          const swBlob = new Blob([swCode], { type: 'application/javascript' });
+          const swUrl = URL.createObjectURL(swBlob);
+          navigator.serviceWorker.register(swUrl).catch(() => {});
+        } catch (e) {}
+      }
+
+      // PWA Install Prompt Handling
+      let deferredPrompt = null;
+      const installBtn = document.getElementById('installBtn');
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        installBtn.style.display = 'inline-block';
+      });
+
+      installBtn.addEventListener('click', async () => {
+        if (!deferredPrompt) return;
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') {
+          installBtn.style.display = 'none';
+        }
+        deferredPrompt = null;
+      });
+
+      window.addEventListener('appinstalled', () => {
+        installBtn.style.display = 'none';
+        deferredPrompt = null;
+      });
+
+      // Network Status Indicator
+      function updateNetStatus() {
+        const el = document.getElementById('netStatus');
+        if (navigator.onLine) {
+          el.textContent = 'অনলাইন';
+        } else {
+          el.textContent = 'অফলাইন মোড';
+        }
+      }
+      window.addEventListener('online', updateNetStatus);
+      window.addEventListener('offline', updateNetStatus);
+      updateNetStatus();
+    })();
+
+    // ==========================================
+    // ২. অ্যাপ সেটিংস এবং মূল লজিক
+    // ==========================================
+    var HOUSE = "বিশ্বাস ভবন", DEMAND_RATE = 42, LIFE_LIMIT = 50, LIFE_RATE = 4.63;
+    var SLABS = [
+      ["প্রথম ধাপ (০-৭৫)", 75, 5.26],
+      ["দ্বিতীয় ধাপ (৭৬-২০০)", 125, 8.50],
+      ["তৃতীয় ধাপ (২০১-৩০০)", 100, 9.10],
+      ["চতুর্থ ধাপ (৩০১-৪০০)", 100, 9.62],
+      ["পঞ্চম ধাপ (৪০১-৬০০)", 200, 15.01],
+      ["ষষ্ঠ ধাপ (৬০০+)", null, 17.35]
+    ];
+
+    var $ = function(id) { return document.getElementById(id); };
+    var f2 = function(n) { return Number(n).toFixed(2); };
+    var r2 = function(n) { return Math.round(n * 100) / 100; };
+    var esc = function(s) {
+      return String(s).replace(/[&<>"']/g, function(c) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+      });
+    };
+
+    var current = null, records = [];
+
+    // কাস্টম মডাল ডায়ালগ (alert/confirm এর বিকল্প)
+    function showAlert(msg, title) {
+      $('msgTitle').textContent = title || 'বিজ্ঞপ্তি';
+      $('msgText').textContent = msg;
+      $('msgBtns').innerHTML = '<button id="msgOkBtn">ঠিক আছে</button>';
+      $('msgModal').style.display = 'block';
+      $('msgOkBtn').onclick = function() { $('msgModal').style.display = 'none'; };
+    }
+
+    function showConfirm(msg, onYes) {
+      $('msgTitle').textContent = 'নিশ্চিত করুন';
+      $('msgText').textContent = msg;
+      $('msgBtns').innerHTML = '<button class="del" id="msgYesBtn">হ্যাঁ, মুছুন</button><button class="sec" id="msgNoBtn">বাতিল</button>';
+      $('msgModal').style.display = 'block';
+      $('msgYesBtn').onclick = function() { $('msgModal').style.display = 'none'; onYes(); };
+      $('msgNoBtn').onclick = function() { $('msgModal').style.display = 'none'; };
+    }
+
+    function store() { try { localStorage.setItem('bills', JSON.stringify(records)); } catch (e) {} }
+    function load() { try { records = JSON.parse(localStorage.getItem('bills') || '[]'); } catch (e) { records = []; } }
+
+    function energy(u) {
+      if (u <= 0) return { total: 0, rows: [] };
+      if (u <= LIFE_LIMIT) {
+        return {
+          total: u * LIFE_RATE,
+          rows: [{ name: 'লাইফ লাইন (০-৫০)', units: u, rate: LIFE_RATE, amount: r2(u * LIFE_RATE) }]
+        };
+      }
+      var rem = u, total = 0, rows = [];
+      for (var i = 0; i < SLABS.length && rem > 0; i++) {
+        var used = SLABS[i][1] === null ? rem : Math.min(rem, SLABS[i][1]);
+        var amt = used * SLABS[i][2];
+        rows.push({ name: SLABS[i][0], units: r2(used), rate: SLABS[i][2], amount: r2(amt) });
+        total += amt;
+        rem -= used;
+      }
+      return { total: total, rows: rows };
+    }
+
+    function makeBill() {
+      var prev = parseFloat($('prev').value), curr = parseFloat($('curr').value);
+      if (isNaN(prev) || isNaN(curr)) return null;
+      if (curr < prev) return { error: 'বর্তমান ইউনিট পূর্বের ইউনিটের চেয়ে কম হতে পারে না' };
+      var vatPct = parseFloat($('vat').value) || 0, other = parseFloat($('other').value) || 0, load = parseFloat($('load').value) || 0;
+      var units = r2(curr - prev), e = energy(units);
+      var demand = $('demand').checked ? load * DEMAND_RATE : 0;
+      var vat = (e.total + demand) * vatPct / 100;
+      var d = new Date();
+      return {
+        name: $('name').value.trim() || 'ভাড়াটিয়া',
+        date: ('0' + d.getDate()).slice(-2) + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + d.getFullYear(),
+        prev: prev,
+        curr: curr,
+        units: units,
+        rows: e.rows,
+        vatPct: vatPct,
+        energy: r2(e.total),
+        demand: r2(demand),
+        vat: r2(vat),
+        other: r2(other),
+        total: r2(e.total + demand + vat + other)
+      };
+    }
+
+    function renderBill(r) {
+      var rows = r.rows.map(function(x) {
+        return '<tr><td>' + esc(x.name) + '</td><td class="n">' + x.units + '</td><td class="n">' + f2(x.rate) + '</td><td class="n">' + f2(x.amount) + '</td></tr>';
+      }).join('');
+      $('bill').innerHTML =
+        '<div class="head"><b>' + HOUSE + '</b>বিদ্যুৎ বিল</div>' +
+        '<div class="info"><span>ভাড়াটিয়া: <b>' + esc(r.name) + '</b></span><span>তারিখ: ' + esc(r.date) + '</span></div>' +
+        '<div class="info"><span>পূর্বের: ' + r.prev + '</span><span>বর্তমান: ' + r.curr + '</span><span>ব্যবহার: <b>' + r.units + ' ইউনিট</b></span></div>' +
+        '<div class="scroll"><table><thead><tr><th>ধাপ</th><th class="n">ইউনিট</th><th class="n">রেট</th><th class="n">টাকা</th></tr></thead><tbody>' + rows +
+        '<tr><td colspan="3">এনার্জি চার্জ</td><td class="n">' + f2(r.energy) + '</td></tr>' +
+        (r.demand ? '<tr><td colspan="3">ডিমান্ড চার্জ</td><td class="n">' + f2(r.demand) + '</td></tr>' : '') +
+        '<tr><td colspan="3">ভ্যাট (' + r.vatPct + '%)</td><td class="n">' + f2(r.vat) + '</td></tr>' +
+        (r.other ? '<tr><td colspan="3">অন্যান্য</td><td class="n">' + f2(r.other) + '</td></tr>' : '') +
+        '<tr class="tot"><td colspan="3">সর্বমোট বিল</td><td class="n">' + f2(r.total) + ' ৳</td></tr></tbody></table></div>';
+    }
+
+    function calc() {
+      $('loadbox').style.display = $('demand').checked ? 'block' : 'none';
+      var r = makeBill();
+      current = null;
+      if (!r) {
+        $('bill').innerHTML = '<p class="hint">পূর্বের ও বর্তমান ইউনিট লিখলেই বিল এখানে দেখাবে।</p>';
+        return;
+      }
+      if (r.error) {
+        $('bill').innerHTML = '<p class="err">' + r.error + '</p>';
+        return;
+      }
+      current = r;
+      renderBill(r);
+    }
+
+    function renderRecords() {
+      var last = {};
+      records.forEach(function(r) { last[r.name] = r.curr; });
+      $('tenants').innerHTML = Object.keys(last).map(function(n) { return '<option value="' + esc(n) + '">'; }).join('');
+      window.lastCurr = last;
+      $('recs').innerHTML = records.slice().reverse().map(function(r) {
+        return '<tr><td>' + esc(r.date) + '</td><td>' + esc(r.name) + '</td><td class="n">' + r.prev + '</td><td class="n">' + r.curr + '</td><td class="n">' + r.units +
+          '</td><td class="n">' + f2(r.total) + '</td><td class="n"><button class="sm sec" onclick="view(' + r.id + ')">দেখুন</button> <button class="sm del" onclick="del(' + r.id + ')">মুছুন</button></td></tr>';
+      }).join('') || '<tr><td colspan="7" class="hint">এখনো কিছু সংরক্ষণ করা হয়নি</td></tr>';
+    }
+
+    window.view = function(id) {
+      var r = records.filter(function(x) { return x.id === id; })[0];
+      if (r) {
+        current = r;
+        renderBill(r);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    };
+
+    window.del = function(id) {
+      showConfirm('এই হিসাবটি স্থায়ীভাবে মুছে ফেলবেন?', function() {
+        records = records.filter(function(x) { return x.id !== id; });
+        store();
+        renderRecords();
+      });
+    };
+
+    $('name').addEventListener('change', function() {
+      var n = $('name').value.trim();
+      if (window.lastCurr && n in window.lastCurr) {
+        $('prev').value = window.lastCurr[n];
+        $('curr').value = '';
+        $('curr').focus();
+        calc();
+      }
+    });
+
+    ['prev', 'curr', 'vat', 'other', 'load', 'demand'].forEach(function(id) {
+      $(id).addEventListener('input', calc);
+    });
+
+    $('saveBtn').addEventListener('click', function() {
+      calc();
+      if (!current || current.id) {
+        showAlert('আগে পূর্বের ও বর্তমান ইউনিট সঠিকভাবে লিখুন।');
+        return;
+      }
+      current.id = Date.now();
+      records.push(current);
+      store();
+      renderRecords();
+      $('prev').value = current.curr;
+      $('curr').value = '';
+      showAlert('বিলটি সফলভাবে সংরক্ষণ করা হয়েছে।', 'সংরক্ষিত');
+    });
+
+    // ==========================================
+    // ৩. অফলাইন A4 PDF তৈরি ও প্রিন্ট
+    // ==========================================
+    var FONT = '"Noto Sans Bengali","Nirmala UI","Kalpurush","Siyam Rupali",sans-serif';
+
+    function billCanvas(r) {
+      var W = 794, S = 2, pad = 50, lh = 30, c = document.createElement('canvas');
+      c.width = W * S;
+      c.height = 1400 * S;
+      var x = c.getContext('2d');
+      x.scale(S, S);
+      x.fillStyle = '#fff';
+      x.fillRect(0, 0, W, 1400);
+      x.fillStyle = '#000';
+
+      function t(s, px, py, sz, bold, al) {
+        x.font = (bold ? 'bold ' : '') + sz + 'px ' + FONT;
+        x.textAlign = al || 'left';
+        x.fillText(String(s), px, py);
+      }
+
+      function ln(py, w) {
+        x.strokeStyle = '#777';
+        x.lineWidth = w || 1;
+        x.beginPath();
+        x.moveTo(pad, py);
+        x.lineTo(W - pad, py);
+        x.stroke();
+      }
+
+      var y = 70;
+      t(HOUSE, W / 2, y, 36, true, 'center'); y += 38;
+      t('বিদ্যুৎ বিল', W / 2, y, 22, false, 'center'); y += 20;
+      ln(y); y += 36;
+      t('ভাড়াটিয়া: ' + r.name, pad, y, 19, true);
+      t('তারিখ: ' + r.date, W - pad, y, 19, false, 'right'); y += 34;
+      t('পূর্বের: ' + r.prev, pad, y, 19);
+      t('বর্তমান: ' + r.curr, W / 2, y, 19, false, 'center');
+      t('ব্যবহার: ' + r.units + ' ইউনিট', W - pad, y, 19, true, 'right'); y += 20;
+      ln(y); y += 32;
+      t('ধাপ', pad, y, 17, true);
+      t('ইউনিট', 470, y, 17, true, 'right');
+      t('রেট', 590, y, 17, true, 'right');
+      t('টাকা', W - pad, y, 17, true, 'right'); y += 12;
+      ln(y); y += lh;
+
+      r.rows.forEach(function(q) {
+        t(q.name, pad, y, 17);
+        t(q.units, 470, y, 17, false, 'right');
+        t(f2(q.rate), 590, y, 17, false, 'right');
+        t(f2(q.amount), W - pad, y, 17, false, 'right');
+        y += lh;
+      });
+
+      ln(y - lh + 10); y += 4;
+      function sum(l, v) { t(l, pad, y, 18); t(f2(v), W - pad, y, 18, false, 'right'); y += lh; }
+      sum('এনার্জি চার্জ', r.energy);
+      if (r.demand) sum('ডিমান্ড চার্জ', r.demand);
+      sum('ভ্যাট (' + r.vatPct + '%)', r.vat);
+      if (r.other) sum('অন্যান্য', r.other);
+
+      y += 2; ln(y - lh + 12, 2); y += 10;
+      t('সর্বমোট বিল', pad, y, 24, true);
+      t(f2(r.total) + ' টাকা', W - pad, y, 24, true, 'right'); y += 16;
+      ln(y, 2);
+
+      var h = y + 50, o = document.createElement('canvas');
+      o.width = W * S;
+      o.height = h * S;
+      var ox = o.getContext('2d');
+      ox.fillStyle = '#fff';
+      ox.fillRect(0, 0, o.width, o.height);
+      ox.drawImage(c, 0, 0, W * S, h * S, 0, 0, W * S, h * S);
+      return o;
+    }
+
+    function makePdf(cv) {
+      var bin = atob(cv.toDataURL('image/jpeg', 0.92).split(',')[1]), jpg = new Uint8Array(bin.length);
+      for (var i = 0; i < bin.length; i++) jpg[i] = bin.charCodeAt(i);
+      var pw = 595.28, ph = 841.89, iw = pw, ih = pw * cv.height / cv.width;
+      if (ih > ph) { ih = ph; iw = ph * cv.width / cv.height; }
+      var enc = new TextEncoder(), parts = [], off = 0, xr = [];
+      function add(d) { if (typeof d === 'string') d = enc.encode(d); parts.push(d); off += d.length; }
+      function obj(n, head, body) {
+        xr[n] = off;
+        add(n + ' 0 obj\n' + head);
+        if (body) { add('\nstream\n'); add(body); add('\nendstream'); }
+        add('\nendobj\n');
+      }
+      add('%PDF-1.4\n');
+      obj(1, '<< /Type /Catalog /Pages 2 0 R >>');
+      obj(2, '<< /Type /Pages /Kids [3 0 R] /Count 1 >>');
+      obj(3, '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ' + pw + ' ' + ph + '] /Resources << /XObject << /Im0 4 0 R >> >> /Contents 5 0 R >>');
+      obj(4, '<< /Type /XObject /Subtype /Image /Width ' + cv.width + ' /Height ' + cv.height + ' /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ' + jpg.length + ' >>', jpg);
+      var cs = 'q ' + iw.toFixed(2) + ' 0 0 ' + ih.toFixed(2) + ' ' + ((pw - iw) / 2).toFixed(2) + ' ' + (ph - ih).toFixed(2) + ' cm /Im0 Do Q';
+      obj(5, '<< /Length ' + cs.length + ' >>', cs);
+      var xo = off;
+      add('xref\n0 6\n0000000000 65535 f \n');
+      for (i = 1; i <= 5; i++) add(('0000000000' + xr[i]).slice(-10) + ' 00000 n \n');
+      add('trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n' + xo + '\n%%EOF');
+      return new Blob(parts, { type: 'application/pdf' });
+    }
+
+    function pdfFile() {
+      if (!current) { showAlert('আগে পূর্বের ও বর্তমান ইউনিট দিয়ে বিল তৈরি করুন।'); return null; }
+      try {
+        window.lastCv = billCanvas(current);
+        var nm = 'bill_' + current.name.replace(/[^\w\u0980-\u09FF]+/g, '_') + '_' + current.date + '.pdf';
+        var blob = makePdf(window.lastCv), f;
+        try { f = new File([blob], nm, { type: 'application/pdf' }); } catch (e) { f = blob; f.name = nm; }
+        return f;
+      } catch (e) {
+        showAlert('PDF তৈরি করা যায়নি: ' + (e && e.message ? e.message : e));
+        return null;
+      }
+    }
+
+    function b64(blob) {
+      return new Promise(function(res) {
+        var r = new FileReader();
+        r.onload = function() { res(String(r.result).split(',')[1]); };
+        r.readAsDataURL(blob);
+      });
+    }
+
+    function cap(n) { return window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins[n]; }
+
+    function showOverlay(f) {
+      $('pv').src = window.lastCv.toDataURL('image/jpeg', 0.9);
+      var a = $('dl');
+      a.href = URL.createObjectURL(f);
+      a.download = f.name;
+      a.target = '_blank';
+      var a2 = $('dl2');
+      a2.download = f.name;
+      a2.target = '_blank';
+      b64(f).then(function(d) { a2.href = 'data:application/pdf;base64,' + d; });
+      $('ov').style.display = 'block';
+    }
+
+    $('ovClose').addEventListener('click', function() { $('ov').style.display = 'none'; });
+
+    $('sysPdfPrintBtn').addEventListener('click', function() {
+      $('ov').style.display = 'none';
+      document.body.className = '';
+      setTimeout(function() { window.print(); }, 100);
+    });
+
+    function printPlugin() {
+      var C = window.Capacitor;
+      if (!C || !(C.isNativePlatform ? C.isNativePlatform() : false)) return null;
+      return C.registerPlugin ? C.registerPlugin('PdfPrint') : (C.Plugins && C.Plugins.PdfPrint);
+    }
+
+    $('printBtn').addEventListener('click', async function() {
+      var f = pdfFile();
+      if (!f) return;
+      try {
+        var P = printPlugin();
+        if (P) { await P.print({ data: await b64(f), name: f.name }); return; }
+        if (cap('Filesystem')) {
+          await cap('Filesystem').writeFile({ path: f.name, data: await b64(f), directory: 'DOCUMENTS' });
+          showAlert('PDF সেভ হয়েছে (Documents ফোল্ডারে)। ফাইলটি খুলে প্রিন্ট দিন।', 'সফল');
+          return;
+        }
+      } catch (e) {
+        showAlert('প্রিন্ট চালু করা যায়নি: ' + (e && e.message ? e.message : e));
+      }
+      showOverlay(f);
+    });
+
+    $('shareBtn').addEventListener('click', async function() {
+      var f = pdfFile();
+      if (!f) return;
+      try {
+        if (cap('Filesystem') && cap('Share')) {
+          await cap('Filesystem').writeFile({ path: f.name, data: await b64(f), directory: 'CACHE' });
+          var u = await cap('Filesystem').getUri({ path: f.name, directory: 'CACHE' });
+          await cap('Share').share({ title: HOUSE + ' বিদ্যুৎ বিল', url: u.uri });
+          return;
+        }
+        if (navigator.canShare && navigator.canShare({ files: [f] })) {
+          await navigator.share({ files: [f], title: HOUSE + ' বিদ্যুৎ বিল' });
+          return;
+        }
+      } catch (e) { if (e && e.name === 'AbortError') return; }
+      showOverlay(f);
+    });
+
+    // ==========================================
+    // ৪. POS থার্মাল প্রিন্টার সাপোর্ট (58mm/80mm + ESC/POS)
+    // ==========================================
+    function renderPosReceipt(r) {
+      var size = $('posSize').value;
+      var paper = $('posPaper');
+      paper.className = 'pos-paper ' + (size === '80' ? 'w80' : 'w58');
+
+      var rowsHtml = r.rows.map(function(x) {
+        var shortName = x.name.split(' ')[0] + ' (' + x.units + 'u)';
+        return '<tr><td>' + esc(shortName) + '</td><td class="n">' + f2(x.rate) + '</td><td class="n">' + f2(x.amount) + '</td></tr>';
+      }).join('');
+
+      paper.innerHTML =
+        '<div class="pos-center"><b>' + HOUSE + '</b><br>বিদ্যুৎ বিল রিসিট</div>' +
+        '<div class="pos-hr"></div>' +
+        '<div class="pos-row"><span>নাম: <b>' + esc(r.name) + '</b></span><span>' + esc(r.date) + '</span></div>' +
+        '<div class="pos-row"><span>পূর্বের: ' + r.prev + '</span><span>বর্তমান: ' + r.curr + '</span></div>' +
+        '<div class="pos-row"><span>মোট ব্যবহৃত ইউনিট:</span><b>' + r.units + ' ইউনিট</b></div>' +
+        '<div class="pos-hr"></div>' +
+        '<table class="pos-table"><thead><tr><th>ধাপ</th><th class="n">রেট</th><th class="n">টাকা</th></tr></thead><tbody>' +
+        rowsHtml +
+        '</tbody></table>' +
+        '<div class="pos-hr"></div>' +
+        '<div class="pos-row"><span>এনার্জি চার্জ:</span><span>' + f2(r.energy) + '</span></div>' +
+        (r.demand ? '<div class="pos-row"><span>ডিমান্ড চার্জ:</span><span>' + f2(r.demand) + '</span></div>' : '') +
+        '<div class="pos-row"><span>ভ্যাট (' + r.vatPct + '%):</span><span>' + f2(r.vat) + '</span></div>' +
+        (r.other ? '<div class="pos-row"><span>অন্যান্য চার্জ:</span><span>' + f2(r.other) + '</span></div>' : '') +
+        '<div class="pos-hr"></div>' +
+        '<div class="pos-row" style="font-size:1.15em;font-weight:700"><span>সর্বমোট বিল:</span><span>' + f2(r.total) + ' ৳</span></div>' +
+        '<div class="pos-hr"></div>' +
+        '<div class="pos-center" style="font-size:0.85em;margin-top:4px">ধন্যবাদ! সময়মতো বিল পরিশোধ করুন।</div>';
+    }
+
+    $('posBtn').addEventListener('click', function() {
+      if (!current) {
+        showAlert('আগে পূর্বের ও বর্তমান ইউনিট দিয়ে বিল তৈরি করুন।');
+        return;
+      }
+      renderPosReceipt(current);
+      $('posOv').style.display = 'block';
+    });
+
+    $('posSize').addEventListener('change', function() {
+      if (current) renderPosReceipt(current);
+    });
+
+    $('posCloseBtn').addEventListener('click', function() {
+      $('posOv').style.display = 'none';
+    });
+
+    // ব্রাউজার / ড্রাইভার ভিত্তিক POS প্রিন্ট
+    $('posSysPrintBtn').addEventListener('click', function() {
+      var size = $('posSize').value;
+      $('posOv').style.display = 'none';
+      document.body.className = size === '80' ? 'print-pos-80' : 'print-pos-58';
+      setTimeout(function() {
+        window.print();
+        setTimeout(function() { document.body.className = ''; }, 500);
+      }, 150);
+    });
+
+    // থার্মাল প্রিন্টারের জন্য হাই-কনট্রাস্ট ক্যানভাস তৈরি (রিসিট ইমেজ প্রিন্টিং অ্যাপ যেমন RawBT / Thermer এর জন্য)
+    function posReceiptCanvas(r, widthMm) {
+      var W = widthMm === '80' ? 576 : 384; // Standard 203 DPI thermal printer dot widths
+      var pad = 16, lh = 28;
+      var c = document.createElement('canvas');
+      c.width = W;
+      c.height = 1200;
+      var x = c.getContext('2d');
+      x.fillStyle = '#fff';
+      x.fillRect(0, 0, W, 1200);
+      x.fillStyle = '#000';
+
+      function t(s, px, py, sz, bold, al) {
+        x.font = (bold ? 'bold ' : '') + sz + 'px ' + FONT;
+        x.textAlign = al || 'left';
+        x.fillText(String(s), px, py);
+      }
+      function dash(py) {
+        x.strokeStyle = '#000';
+        x.lineWidth = 2;
+        x.setLineDash([6, 4]);
+        x.beginPath();
+        x.moveTo(pad, py);
+        x.lineTo(W - pad, py);
+        x.stroke();
+        x.setLineDash([]);
+      }
+
+      var y = 36;
+      t(HOUSE, W / 2, y, 28, true, 'center'); y += 30;
+      t('বিদ্যুৎ বিল রিসিট', W / 2, y, 20, false, 'center'); y += 16;
+      dash(y); y += 26;
+
+      t('নাম: ' + r.name, pad, y, 19, true); y += lh;
+      t('তারিখ: ' + r.date, pad, y, 18); y += lh;
+      t('পূর্বের: ' + r.prev + ' | বর্তমান: ' + r.curr, pad, y, 18); y += lh;
+      t('ব্যবহার: ' + r.units + ' ইউনিট', pad, y, 19, true); y += 16;
+      dash(y); y += 26;
+
+      t('ধাপ', pad, y, 17, true);
+      t('টাকা', W - pad, y, 17, true, 'right'); y += 12;
+      dash(y); y += 24;
+
+      r.rows.forEach(function(q) {
+        t(q.name + ' (' + q.units + 'x' + f2(q.rate) + ')', pad, y, 17);
+        t(f2(q.amount), W - pad, y, 17, false, 'right');
+        y += lh;
+      });
+
+      dash(y - 14); y += 14;
+      t('এনার্জি চার্জ:', pad, y, 18); t(f2(r.energy), W - pad, y, 18, false, 'right'); y += lh;
+      if (r.demand) { t('ডিমান্ড চার্জ:', pad, y, 18); t(f2(r.demand), W - pad, y, 18, false, 'right'); y += lh; }
+      t('ভ্যাট (' + r.vatPct + '%):', pad, y, 18); t(f2(r.vat), W - pad, y, 18, false, 'right'); y += lh;
+      if (r.other) { t('অন্যান্য:', pad, y, 18); t(f2(r.other), W - pad, y, 18, false, 'right'); y += lh; }
+
+      dash(y - 12); y += 18;
+      t('সর্বমোট বিল:', pad, y, 24, true);
+      t(f2(r.total) + ' ৳', W - pad, y, 24, true, 'right'); y += 20;
+      dash(y); y += 26;
+      t('ধন্যবাদ!', W / 2, y, 18, false, 'center'); y += 30;
+
+      var out = document.createElement('canvas');
+      out.width = W;
+      out.height = y;
+      out.getContext('2d').drawImage(c, 0, 0, W, y, 0, 0, W, y);
+      return out;
+    }
+
+    // রিসিট ইমেজ শেয়ার (Android POS প্রিন্টার অ্যাপে পাঠানোর সবচেয়ে নির্ভরযোগ্য উপায়)
+    $('posImgShareBtn').addEventListener('click', function() {
+      if (!current) return;
+      var size = $('posSize').value;
+      var cv = posReceiptCanvas(current, size);
+      cv.toBlob(async function(blob) {
+        var file = new File([blob], 'pos_receipt_' + current.date + '.png', { type: 'image/png' });
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          try {
+            await navigator.share({ files: [file], title: 'POS রিসিট' });
+            return;
+          } catch (e) { if (e && e.name === 'AbortError') return; }
+        }
+        var a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = file.name;
+        a.click();
+      }, 'image/png');
+    });
+
+    // সরাসরি Web Bluetooth ESC/POS রাও প্রিন্টিং (বিটম্যাপ রাস্টার মোডে বাংলা সমর্থনসহ)
+    $('posBtBtn').addEventListener('click', async function() {
+      if (!current) return;
+      if (!navigator.bluetooth) {
+        showAlert('আপনার ব্রাউজারে সরাসরি Web Bluetooth সমর্থিত নয়। অনুগ্রহ করে "রিসিট ইমেজ শেয়ার" বা "POS প্রিন্ট করুন" ব্যবহার করুন।');
+        return;
+      }
+      try {
+        var device = await navigator.bluetooth.requestDevice({
+          acceptAllDevices: true,
+          optionalServices: ['000018f0-0000-1000-8000-00805f9b34fb', 'e7810a71-73ae-499d-8c15-faa9aef0c3f2']
+        });
+        var server = await device.gatt.connect();
+        var services = await server.getPrimaryServices();
+        var writeChar = null;
+        for (var i = 0; i < services.length; i++) {
+          var chars = await services[i].getCharacteristics();
+          for (var j = 0; j < chars.length; j++) {
+            if (chars[j].properties.write || chars[j].properties.writeWithoutResponse) {
+              writeChar = chars[j];
+              break;
+            }
+          }
+          if (writeChar) break;
+        }
+        if (!writeChar) {
+          showAlert('প্রিন্টারে ডেটা পাঠানোর চ্যানেল পাওয়া যায়নি।');
+          return;
+        }
+
+        // বাংলা রিসিট ক্যানভাসকে 1-bit ESC/POS Raster Bit Image এ রূপান্তর
+        var size = $('posSize').value;
+        var cv = posReceiptCanvas(current, size);
+        var w = cv.width, h = cv.height;
+        var imgData = cv.getContext('2d').getImageData(0, 0, w, h).data;
+        var bytesPerRow = Math.ceil(w / 8);
+        var raster = new Uint8Array(8 + bytesPerRow * h + 4);
+        // ESC @ (Init) + GS v 0 (Raster bit image)
+        raster[0] = 0x1B; raster[1] = 0x40;
+        raster[2] = 0x1D; raster[3] = 0x76; raster[4] = 0x30; raster[5] = 0x00;
+        raster[6] = bytesPerRow & 0xFF; raster[7] = (bytesPerRow >> 8) & 0xFF;
+        // Height is placed right after width in standard GS v 0, let's construct exact header
+        var header = new Uint8Array([
+          0x1B, 0x40,
+          0x1D, 0x76, 0x30, 0x00,
+          bytesPerRow & 0xFF, (bytesPerRow >> 8) & 0xFF,
+          h & 0xFF, (h >> 8) & 0xFF
+        ]);
+        var body = new Uint8Array(bytesPerRow * h);
+        for (var y = 0; y < h; y++) {
+          for (var bx = 0; bx < bytesPerRow; bx++) {
+            var byteVal = 0;
+            for (var bit = 0; bit < 8; bit++) {
+              var px = bx * 8 + bit;
+              if (px < w) {
+                var idx = (y * w + px) * 4;
+                var lum = (imgData[idx] + imgData[idx + 1] + imgData[idx + 2]) / 3;
+                if (lum < 160) byteVal |= (1 << (7 - bit));
+              }
+            }
+            body[y * bytesPerRow + bx] = byteVal;
+          }
+        }
+        var footer = new Uint8Array([0x1B, 0x64, 0x04]); // Feed 4 lines
+        var fullData = new Uint8Array(header.length + body.length + footer.length);
+        fullData.set(header, 0);
+        fullData.set(body, header.length);
+        fullData.set(footer, header.length + body.length);
+
+        // Send in 100-byte BLE chunks
+        var chunkSize = 100;
+        for (var offset = 0; offset < fullData.length; offset += chunkSize) {
+          var chunk = fullData.slice(offset, offset + chunkSize);
+          if (writeChar.properties.writeWithoutResponse) {
+            await writeChar.writeValueWithoutResponse(chunk);
+          } else {
+            await writeChar.writeValue(chunk);
+          }
+        }
+        showAlert('ব্লুটুথ POS প্রিন্টারে রিসিট পাঠানো হয়েছে!', 'প্রিন্ট সম্পন্ন');
+      } catch (err) {
+        if (err && err.name !== 'NotFoundError') {
+          showAlert('ব্লুটুথ প্রিন্ট ত্রুটি: ' + err.message);
+        }
+      }
+    });
+
+    // CSV Export
+    $('csvBtn').addEventListener('click', function() {
+      if (!records.length) {
+        showAlert('এখনো কোনো হিসাব সংরক্ষণ করা হয়নি।');
+        return;
+      }
+      var rows = [['তারিখ', 'নাম', 'পূর্বের', 'বর্তমান', 'ইউনিট', 'এনার্জি', 'ডিমান্ড', 'ভ্যাট', 'অন্যান্য', 'মোট']];
+      records.forEach(function(r) {
+        rows.push([r.date, '"' + r.name.replace(/"/g, '""') + '"', r.prev, r.curr, r.units, r.energy, r.demand, r.vat, r.other, r.total]);
+      });
+      var blob = new Blob(['\ufeff' + rows.map(function(x) { return x.join(','); }).join('\n')], { type: 'text/csv;charset=utf-8' });
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'bidyut_bill.csv';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    });
+
+    // অ্যাপ চালু হলে সংরক্ষিত ডেটা লোড
+    load();
+    renderRecords();
+  </script>
+</body>
+</html>
+```

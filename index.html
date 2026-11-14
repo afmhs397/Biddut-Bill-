@@ -1,631 +1,544 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#1d6fe8">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="বিদ্যুৎ বিল">
-  <title>বিশ্বাস ভবন — বিদ্যুৎ বিল</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1d6fe8">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="বিদ্যুৎ বিল">
+<title>বিশ্বাস ভবন — বিদ্যুৎ বিল</title>
 
-  <!-- Real Static PWA Manifest & Icons -->
-  <link rel="manifest" href="./manifest.json">
-  <link rel="icon" type="image/svg+xml" href="./icon.svg">
-  <link rel="apple-touch-icon" href="./icon.svg">
+<link rel="manifest" href="./manifest.json">
+<link rel="icon" type="image/svg+xml" href="./icon.svg">
+<link rel="apple-touch-icon" href="./icon.svg">
 
-  <style>
-    :root {
-      --bg: #f3f5f9;
-      --card: #ffffff;
-      --tx: #1d2433;
-      --mut: #667085;
-      --pri: #1d6fe8;
-      --pri-hover: #1558bd;
-      --bd: #d9dee8;
-      --err: #c62828;
-      --ok: #15803d;
-      --pos-bg: #fffbeb;
-    }
+<style>
+:root {
+  --bg:#f3f5f9; --card:#ffffff; --tx:#1d2433; --mut:#667085; --pri:#1d6fe8;
+  --pri-hover:#1558bd; --bd:#d9dee8; --err:#c62828; --ok:#15803d; --pos-bg:#fffbeb;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg:#10141c; --card:#1a2130; --tx:#e8ecf4; --mut:#9aa6bd; --bd:#2c3649;
+    --pri:#5b9bff; --pri-hover:#4285f4; --pos-bg:#232a3b;
+  }
+}
+* { box-sizing: border-box; }
+body {
+  margin:0; background:var(--bg); color:var(--tx); font-size:16px; line-height:1.6;
+  padding-bottom: calc(20px + env(safe-area-inset-bottom,0px));
+  font-family:"Noto Sans Bengali","Nirmala UI","Kalpurush","Siyam Rupali",system-ui,sans-serif;
+}
+header {
+  background:var(--pri); color:#fff; padding:14px 16px;
+  padding-top: calc(14px + env(safe-area-inset-top,0px));
+  display:flex; align-items:center; justify-content:space-between; gap:12px;
+  box-shadow:0 2px 8px rgba(0,0,0,.12);
+}
+.hdr-title { text-align:left; }
+header h1 { margin:0; font-size:1.3rem; line-height:1.25; }
+header p { margin:0; font-size:.85rem; opacity:.92; }
+.hdr-actions { display:flex; align-items:center; gap:8px; }
+.badge {
+  font-size:.75rem; padding:3px 8px; border-radius:999px;
+  background:rgba(255,255,255,.2); color:#fff; white-space:nowrap;
+}
+#installBtn {
+  display:none; background:#fff; color:#1d6fe8; font-weight:700; font-size:.82rem;
+  padding:6px 12px; border-radius:999px; border:none; cursor:pointer;
+  white-space:nowrap; box-shadow:0 2px 6px rgba(0,0,0,.15);
+}
+main {
+  max-width:1020px; margin:0 auto; padding:12px; display:grid; gap:12px;
+  grid-template-columns:1fr 1fr;
+}
+@media (max-width:760px) { main { grid-template-columns:1fr; } }
+.card {
+  background:var(--card); border:1px solid var(--bd); border-radius:14px;
+  padding:16px; box-shadow:0 1px 3px rgba(0,0,0,.04);
+}
+.card h2 {
+  margin:0 0 10px; font-size:1.08rem; display:flex; align-items:center; justify-content:space-between;
+}
+.full { grid-column:1 / -1; }
+label { display:block; font-size:.88rem; color:var(--mut); margin:8px 0 4px; }
+input[type=text], input[type=number], select {
+  width:100%; padding:11px 12px; font-size:16px; font-family:inherit;
+  border:1px solid var(--bd); border-radius:10px; background:var(--bg); color:var(--tx);
+}
+input:focus, select:focus { outline:2px solid var(--pri); border-color:transparent; }
+.two { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.chk { display:flex; gap:8px; align-items:center; margin-top:12px; color:var(--tx); cursor:pointer; }
+.chk input { width:18px; height:18px; accent-color:var(--pri); }
+.btns { display:flex; flex-wrap:wrap; gap:8px; margin-top:14px; }
+button {
+  flex:1 1 115px; padding:11px 12px; font-size:15px; font-weight:600; font-family:inherit;
+  border:0; border-radius:10px; background:var(--pri); color:#fff; cursor:pointer;
+  transition:opacity .15s, transform .1s;
+}
+button:active { transform:scale(.98); }
+button.sec { background:transparent; color:var(--pri); border:1.5px solid var(--pri); }
+button.pos { background:#0f766e; color:#fff; }
+button.sm { flex:0 0 auto; padding:6px 10px; font-size:13px; border-radius:8px; }
+button.del { background:var(--err); }
+.hint { color:var(--mut); }
+.err { color:var(--err); font-weight:600; }
+.head { text-align:center; border-bottom:2px dashed var(--bd); padding-bottom:8px; margin-bottom:10px; }
+.head b { font-size:1.35rem; display:block; }
+table { width:100%; border-collapse:collapse; font-size:.93rem; }
+td, th { padding:6px 4px; border-bottom:1px solid var(--bd); }
+th { text-align:left; color:var(--mut); }
+.n { text-align:right; white-space:nowrap; }
+.scroll { overflow-x:auto; }
+.tot td { font-weight:700; font-size:1.12rem; border-top:2px solid var(--tx); border-bottom:0; padding-top:8px; }
+.info { display:flex; justify-content:space-between; gap:8px; flex-wrap:wrap; font-size:.93rem; margin-bottom:4px; }
+.overlay {
+  display:none; position:fixed; inset:0; z-index:60; background:rgba(0,0,0,.65);
+  backdrop-filter:blur(2px); overflow:auto; padding:16px;
+  padding-top: calc(20px + env(safe-area-inset-top,0px));
+}
+.overlay .box {
+  max-width:540px; margin:0 auto; background:var(--card); border:1px solid var(--bd);
+  border-radius:16px; padding:16px; box-shadow:0 12px 32px rgba(0,0,0,.25);
+}
+#ov img { width:100%; border:1px solid var(--bd); border-radius:10px; background:#fff; }
+a.btn {
+  flex:1 1 115px; padding:11px; font-size:15px; font-weight:600; border-radius:10px;
+  background:var(--pri); color:#fff; text-align:center; text-decoration:none;
+}
+.pos-preview-wrap {
+  background:#e5e7eb; padding:12px; border-radius:10px; display:flex;
+  justify-content:center; max-height:55vh; overflow-y:auto;
+}
+.pos-paper {
+  background:#fff; color:#000; padding:12px 10px; box-shadow:0 4px 12px rgba(0,0,0,.15);
+  font-family:"Noto Sans Bengali",monospace,sans-serif; transition:width .2s;
+}
+.pos-paper.w58 { width:220px; font-size:12px; line-height:1.35; }
+.pos-paper.w80 { width:302px; font-size:13.5px; line-height:1.4; }
+.pos-center { text-align:center; }
+.pos-hr { border-top:1px dashed #000; margin:6px 0; }
+.pos-row { display:flex; justify-content:space-between; gap:4px; }
+.pos-table { width:100%; border-collapse:collapse; margin:4px 0; }
+.pos-table th, .pos-table td { border:none; padding:2px 0; font-size:inherit; color:#000; }
+.pos-table th { border-bottom:1px dashed #000; }
 
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --bg: #10141c;
-        --card: #1a2130;
-        --tx: #e8ecf4;
-        --mut: #9aa6bd;
-        --bd: #2c3649;
-        --pri: #5b9bff;
-        --pri-hover: #4285f4;
-        --pos-bg: #232a3b;
-      }
-    }
+@media print {
+  /* ── PDF print mode ── */
+  body.print-pdf { background:#fff !important; color:#000 !important; margin:0 !important; padding:0 !important; }
+  body.print-pdf header,
+  body.print-pdf .no-print,
+  body.print-pdf #ov,
+  body.print-pdf #posOv,
+  body.print-pdf #msgModal { display:none !important; }
+  body.print-pdf main { display:block; padding:0; max-width:100%; }
+  body.print-pdf .card { border:0; padding:0; box-shadow:none; background:#fff !important; }
+  body.print-pdf .card:not(.billcard) { display:none !important; }
+  body.print-pdf .billcard { display:block !important; }
 
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      background: var(--bg);
-      color: var(--tx);
-      font-size: 16px;
-      line-height: 1.6;
-      padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px));
-      font-family: "Noto Sans Bengali", "Nirmala UI", "Kalpurush", "Siyam Rupali", system-ui, sans-serif;
-    }
-
-    header {
-      background: var(--pri);
-      color: #fff;
-      padding: 14px 16px;
-      padding-top: calc(14px + env(safe-area-inset-top, 0px));
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
-    }
-
-    .hdr-title { text-align: left; }
-    header h1 { margin: 0; font-size: 1.3rem; line-height: 1.25; }
-    header p { margin: 0; font-size: 0.85rem; opacity: 0.92; }
-
-    .hdr-actions {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .badge {
-      font-size: 0.75rem;
-      padding: 3px 8px;
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.2);
-      color: #fff;
-      white-space: nowrap;
-    }
-
-    #installBtn {
-      display: none;
-      background: #fff;
-      color: #1d6fe8;
-      font-weight: 700;
-      font-size: 0.82rem;
-      padding: 6px 12px;
-      border-radius: 999px;
-      border: none;
-      cursor: pointer;
-      white-space: nowrap;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-    }
-
-    main {
-      max-width: 1020px;
-      margin: 0 auto;
-      padding: 12px;
-      display: grid;
-      gap: 12px;
-      grid-template-columns: 1fr 1fr;
-    }
-
-    @media (max-width: 760px) {
-      main { grid-template-columns: 1fr; }
-    }
-
-    .card {
-      background: var(--card);
-      border: 1px solid var(--bd);
-      border-radius: 14px;
-      padding: 16px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-    }
-
-    .card h2 {
-      margin: 0 0 10px;
-      font-size: 1.08rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .full { grid-column: 1 / -1; }
-
-    label {
-      display: block;
-      font-size: 0.88rem;
-      color: var(--mut);
-      margin: 8px 0 4px;
-    }
-
-    input[type=text], input[type=number], select {
-      width: 100%;
-      padding: 11px 12px;
-      font-size: 16px;
-      font-family: inherit;
-      border: 1px solid var(--bd);
-      border-radius: 10px;
-      background: var(--bg);
-      color: var(--tx);
-    }
-
-    input:focus, select:focus {
-      outline: 2px solid var(--pri);
-      border-color: transparent;
-    }
-
-    .two {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-
-    .chk {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-      margin-top: 12px;
-      color: var(--tx);
-      cursor: pointer;
-    }
-
-    .chk input {
-      width: 18px;
-      height: 18px;
-      accent-color: var(--pri);
-    }
-
-    .btns {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 14px;
-    }
-
-    button {
-      flex: 1 1 115px;
-      padding: 11px 12px;
-      font-size: 15px;
-      font-weight: 600;
-      font-family: inherit;
-      border: 0;
-      border-radius: 10px;
-      background: var(--pri);
-      color: #fff;
-      cursor: pointer;
-      transition: opacity 0.15s, transform 0.1s;
-    }
-
-    button:active { transform: scale(0.98); }
-    button.sec { background: transparent; color: var(--pri); border: 1.5px solid var(--pri); }
-    button.pos { background: #0f766e; color: #fff; }
-    button.sm { flex: 0 0 auto; padding: 6px 10px; font-size: 13px; border-radius: 8px; }
-    button.del { background: var(--err); }
-
-    .hint { color: var(--mut); }
-    .err { color: var(--err); font-weight: 600; }
-
-    .head {
-      text-align: center;
-      border-bottom: 2px dashed var(--bd);
-      padding-bottom: 8px;
-      margin-bottom: 10px;
-    }
-
-    .head b { font-size: 1.35rem; display: block; }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.93rem;
-    }
-
-    td, th {
-      padding: 6px 4px;
-      border-bottom: 1px solid var(--bd);
-    }
-
-    th { text-align: left; color: var(--mut); }
-    .n { text-align: right; white-space: nowrap; }
-    .scroll { overflow-x: auto; }
-
-    .tot td {
-      font-weight: 700;
-      font-size: 1.12rem;
-      border-top: 2px solid var(--tx);
-      border-bottom: 0;
-      padding-top: 8px;
-    }
-
-    .info {
-      display: flex;
-      justify-content: space-between;
-      gap: 8px;
-      flex-wrap: wrap;
-      font-size: 0.93rem;
-      margin-bottom: 4px;
-    }
-
-    .overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      z-index: 60;
-      background: rgba(0, 0, 0, 0.65);
-      backdrop-filter: blur(2px);
-      overflow: auto;
-      padding: 16px;
-      padding-top: calc(20px + env(safe-area-inset-top, 0px));
-    }
-
-    .overlay .box {
-      max-width: 540px;
-      margin: 0 auto;
-      background: var(--card);
-      border: 1px solid var(--bd);
-      border-radius: 16px;
-      padding: 16px;
-      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
-    }
-
-    #ov img {
-      width: 100%;
-      border: 1px solid var(--bd);
-      border-radius: 10px;
-      background: #fff;
-    }
-
-    a.btn {
-      flex: 1 1 115px;
-      padding: 11px;
-      font-size: 15px;
-      font-weight: 600;
-      border-radius: 10px;
-      background: var(--pri);
-      color: #fff;
-      text-align: center;
-      text-decoration: none;
-    }
-
-    .pos-preview-wrap {
-      background: #e5e7eb;
-      padding: 12px;
-      border-radius: 10px;
-      display: flex;
-      justify-content: center;
-      max-height: 55vh;
-      overflow-y: auto;
-    }
-
-    .pos-paper {
-      background: #fff;
-      color: #000;
-      padding: 12px 10px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      font-family: "Noto Sans Bengali", monospace, sans-serif;
-      transition: width 0.2s;
-    }
-
-    .pos-paper.w58 { width: 220px; font-size: 12px; line-height: 1.35; }
-    .pos-paper.w80 { width: 302px; font-size: 13.5px; line-height: 1.4; }
-
-    .pos-center { text-align: center; }
-    .pos-hr { border-top: 1px dashed #000; margin: 6px 0; }
-    .pos-row { display: flex; justify-content: space-between; gap: 4px; }
-    .pos-table { width: 100%; border-collapse: collapse; margin: 4px 0; }
-    .pos-table th, .pos-table td { border: none; padding: 2px 0; font-size: inherit; color: #000; }
-    .pos-table th { border-bottom: 1px dashed #000; }
-
-    @media print {
-      body {
-        background: #fff !important;
-        color: #000 !important;
-        margin: 0 !important;
-        padding: 0 !important;
-      }
-      header, .no-print, .overlay { display: none !important; }
-      main { display: block; padding: 0; max-width: 100%; }
-      .card { border: 0; padding: 0; box-shadow: none; background: #fff !important; }
-      .card:not(.billcard) { display: none !important; }
-
-      body.print-pos-58 {
-        width: 58mm !important;
-        font-size: 11px !important;
-        line-height: 1.3 !important;
-      }
-      body.print-pos-58 .billcard { width: 54mm !important; margin: 0 auto; }
-      body.print-pos-58 td, body.print-pos-58 th { padding: 2px 1px !important; font-size: 10.5px !important; }
-      body.print-pos-58 .head b { font-size: 14px !important; }
-      body.print-pos-58 .tot td { font-size: 12.5px !important; }
-
-      body.print-pos-80 {
-        width: 80mm !important;
-        font-size: 12.5px !important;
-        line-height: 1.35 !important;
-      }
-      body.print-pos-80 .billcard { width: 74mm !important; margin: 0 auto; }
-      body.print-pos-80 td, body.print-pos-80 th { padding: 3px 2px !important; font-size: 12px !important; }
-      body.print-pos-80 .head b { font-size: 16px !important; }
-      body.print-pos-80 .tot td { font-size: 14px !important; }
-    }
-  </style>
+  /* ── POS overlay print mode ── */
+  body.print-pos header,
+  body.print-pos main,
+  body.print-pos #ov,
+  body.print-pos #msgModal { display:none !important; }
+  body.print-pos #posOv {
+    display:block !important; position:static; inset:auto; background:#fff;
+    padding:0; overflow:visible;
+  }
+  body.print-pos #posOv > .box {
+    max-width:100%; border:0; box-shadow:none; padding:0; background:#fff;
+  }
+  body.print-pos #posOv > .box > *:not(.pos-preview-wrap) { display:none !important; }
+  body.print-pos .pos-preview-wrap {
+    background:#fff; padding:0; max-height:none; overflow:visible; display:block;
+  }
+  body.print-pos .pos-paper { box-shadow:none; margin:0 auto; }
+  body.print-pos.print-pos-58 .pos-paper { width:54mm; font-size:11px; line-height:1.3; }
+  body.print-pos.print-pos-80 .pos-paper { width:74mm; font-size:12px; line-height:1.35; }
+}
+</style>
 </head>
 <body>
 
-  <header>
-    <div class="hdr-title">
-      <h1>বিশ্বাস ভবন</h1>
-      <p>ভাড়াটিয়ার বিদ্যুৎ বিল (PWA)</p>
+<header>
+  <div class="hdr-title">
+    <h1>বিশ্বাস ভবন</h1>
+    <p>ভাড়াটিয়ার বিদ্যুৎ বিল (PWA)</p>
+  </div>
+  <div class="hdr-actions">
+    <span id="netStatus" class="badge">অফলাইন প্রস্তুত</span>
+    <button id="installBtn">📲 অ্যাপ ইনস্টল</button>
+  </div>
+</header>
+
+<main>
+  <section class="card no-print">
+    <h2>ইউনিট দিন</h2>
+    <label for="name">ভাড়াটিয়ার নাম / ফ্ল্যাট</label>
+    <input type="text" id="name" list="tenants" autocomplete="off" placeholder="যেমন: ২য় তলা - রহিম">
+    <datalist id="tenants"></datalist>
+
+    <div class="two">
+      <div>
+        <label for="prev">পূর্বের ইউনিট</label>
+        <input type="number" id="prev" inputmode="decimal" step="any" min="0">
+      </div>
+      <div>
+        <label for="curr">বর্তমান ইউনিট</label>
+        <input type="number" id="curr" inputmode="decimal" step="any" min="0">
+      </div>
     </div>
-    <div class="hdr-actions">
-      <span id="netStatus" class="badge">অফলাইন প্রস্তুত</span>
-      <button id="installBtn">📲 অ্যাপ ইনস্টল</button>
+
+    <div class="two">
+      <div>
+        <label for="vat">ভ্যাট (%)</label>
+        <input type="number" id="vat" inputmode="decimal" step="any" value="5">
+      </div>
+      <div>
+        <label for="other">অন্যান্য চার্জ (টাকা)</label>
+        <input type="number" id="other" inputmode="decimal" step="any" value="0">
+      </div>
     </div>
-  </header>
 
-  <main>
-    <section class="card no-print">
-      <h2>ইউনিট দিন</h2>
-      <label for="name">ভাড়াটিয়ার নাম / ফ্ল্যাট</label>
-      <input type="text" id="name" list="tenants" autocomplete="off" placeholder="যেমন: ২য় তলা - রহিম">
-      <datalist id="tenants"></datalist>
+    <label class="chk">
+      <input type="checkbox" id="demand"> ডিমান্ড চার্জ ধরুন (লোড × ৪২ টাকা)
+    </label>
 
-      <div class="two">
-        <div>
-          <label for="prev">পূর্বের ইউনিট</label>
-          <input type="number" id="prev" inputmode="decimal" step="any" min="0">
-        </div>
-        <div>
-          <label for="curr">বর্তমান ইউনিট</label>
-          <input type="number" id="curr" inputmode="decimal" step="any" min="0">
-        </div>
-      </div>
+    <div id="loadbox" style="display:none">
+      <label for="load">লোড (কিলোওয়াট)</label>
+      <input type="number" id="load" inputmode="decimal" step="any" value="0">
+    </div>
 
-      <div class="two">
-        <div>
-          <label for="vat">ভ্যাট (%)</label>
-          <input type="number" id="vat" inputmode="decimal" step="any" value="5">
-        </div>
-        <div>
-          <label for="other">অন্যান্য চার্জ (টাকা)</label>
-          <input type="number" id="other" inputmode="decimal" step="any" value="0">
-        </div>
-      </div>
+    <div class="btns">
+      <button id="saveBtn">💾 সংরক্ষণ</button>
+      <button class="sec" id="printBtn">📄 PDF প্রিন্ট</button>
+      <button class="pos" id="posBtn">🧾 POS প্রিন্ট</button>
+      <button class="sec" id="shareBtn">📤 শেয়ার</button>
+    </div>
+  </section>
 
-      <label class="chk">
-        <input type="checkbox" id="demand"> ডিমান্ড চার্জ ধরুন (লোড × ৪২ টাকা)
-      </label>
+  <section class="card billcard">
+    <h2 class="no-print">বিল প্রিভিউ</h2>
+    <div id="bill">
+      <p class="hint">পূর্বের ও বর্তমান ইউনিট লিখলেই বিল এখানে দেখাবে।</p>
+    </div>
+  </section>
 
-      <div id="loadbox" style="display:none">
-        <label for="load">লোড (কিলোওয়াট)</label>
-        <input type="number" id="load" inputmode="decimal" step="any" value="0">
-      </div>
+  <section class="card full no-print">
+    <h2>সংরক্ষিত হিসাব</h2>
+    <div class="scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>তারিখ</th>
+            <th>নাম</th>
+            <th class="n">পূর্বের</th>
+            <th class="n">বর্তমান</th>
+            <th class="n">ইউনিট</th>
+            <th class="n">বিল</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="recs"></tbody>
+      </table>
+    </div>
+    <div class="btns">
+      <button class="sec" id="csvBtn">📊 CSV এক্সপোর্ট</button>
+    </div>
+  </section>
+</main>
 
-      <div class="btns">
-        <button id="saveBtn">💾 সংরক্ষণ</button>
-        <button class="sec" id="printBtn">📄 PDF প্রিন্ট</button>
-        <button class="pos" id="posBtn">🧾 POS প্রিন্ট</button>
-        <button class="sec" id="shareBtn">📤 শেয়ার</button>
-      </div>
-    </section>
-
-    <section class="card billcard">
-      <h2 class="no-print">বিল প্রিভিউ</h2>
-      <div id="bill">
-        <p class="hint">পূর্বের ও বর্তমান ইউনিট লিখলেই বিল এখানে দেখাবে।</p>
-      </div>
-    </section>
-
-    <section class="card full no-print">
-      <h2>সংরক্ষিত হিসাব</h2>
-      <div class="scroll">
-        <table>
-          <thead>
-            <tr>
-              <th>তারিখ</th>
-              <th>নাম</th>
-              <th class="n">পূর্বের</th>
-              <th class="n">বর্তমান</th>
-              <th class="n">ইউনিট</th>
-              <th class="n">বিল</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody id="recs"></tbody>
-        </table>
-      </div>
-      <div class="btns">
-        <button class="sec" id="csvBtn">📊 CSV এক্সপোর্ট</button>
-      </div>
-    </section>
-  </main>
-
-  <div id="ov" class="overlay">
-    <div class="box">
-      <h2 style="margin:0 0 6px;font-size:1.08rem">বিল PDF প্রস্তুত</h2>
-      <p class="hint" style="margin:0 0 10px;font-size:.9rem">ডাউনলোড না হলে নিচের ছবিটি চেপে ধরে "ছবি সেভ করুন" দিন, অথবা সিস্টেম প্রিন্ট ব্যবহার করুন।</p>
-      <img id="pv" alt="বিল">
-      <div class="btns">
-        <a class="btn" id="dl" href="#">PDF ডাউনলোড</a>
-        <a class="btn" id="dl2" href="#">বিকল্প ডাউনলোড</a>
-        <button class="sec" id="sysPdfPrintBtn">🖨️ সিস্টেম প্রিন্ট</button>
-        <button class="sec" id="ovClose">বন্ধ করুন</button>
-      </div>
+<div id="ov" class="overlay">
+  <div class="box">
+    <h2 style="margin:0 0 6px;font-size:1.08rem">বিল PDF প্রস্তুত</h2>
+    <p class="hint" style="margin:0 0 10px;font-size:.9rem">
+      ডাউনলোড না হলে নিচের ছবিটি চেপে ধরে "ছবি সেভ করুন" দিন, অথবা সিস্টেম প্রিন্ট ব্যবহার করুন।
+    </p>
+    <img id="pv" alt="বিল">
+    <div class="btns">
+      <a class="btn" id="dl" href="#">PDF ডাউনলোড</a>
+      <a class="btn" id="dl2" href="#">বিকল্প ডাউনলোড</a>
+      <button class="sec" id="sysPdfPrintBtn">🖨️ সিস্টেম প্রিন্ট</button>
+      <button class="sec" id="ovClose">বন্ধ করুন</button>
     </div>
   </div>
+</div>
 
-  <div id="posOv" class="overlay">
-    <div class="box">
-      <h2 style="margin:0 0 6px;font-size:1.08rem">🧾 POS থার্মাল প্রিন্টার</h2>
-      <p class="hint" style="margin:0 0 10px;font-size:.88rem">রিসিট পেপারের সাইজ নির্বাচন করুন এবং প্রিন্ট দিন। ব্লুটুথ POS প্রিন্টারের জন্য সরাসরি প্রিন্ট বা ইমেজ শেয়ার ব্যবহার করতে পারেন।</p>
+<div id="posOv" class="overlay">
+  <div class="box">
+    <h2 style="margin:0 0 6px;font-size:1.08rem">🧾 POS থার্মাল প্রিন্টার</h2>
+    <p class="hint" style="margin:0 0 10px;font-size:.88rem">
+      রিসিট পেপারের সাইজ নির্বাচন করুন এবং প্রিন্ট দিন। ব্লুটুথ POS প্রিন্টারের জন্য সরাসরি প্রিন্ট বা ইমেজ শেয়ার ব্যবহার করতে পারেন।
+    </p>
 
-      <div style="margin-bottom:10px">
-        <label for="posSize">পেপারের প্রস্থ (Paper Width)</label>
-        <select id="posSize">
-          <option value="58">58mm (ছোট থার্মাল রোল - ২ ইঞ্চি)</option>
-          <option value="80">80mm (বড় থার্মাল রোল - ৩ ইঞ্চি)</option>
-        </select>
-      </div>
+    <div style="margin-bottom:10px">
+      <label for="posSize">পেপারের প্রস্থ (Paper Width)</label>
+      <select id="posSize">
+        <option value="58">58mm (ছোট থার্মাল রোল - ২ ইঞ্চি)</option>
+        <option value="80">80mm (বড় থার্মাল রোল - ৩ ইঞ্চি)</option>
+      </select>
+    </div>
 
-      <div class="pos-preview-wrap">
-        <div id="posPaper" class="pos-paper w58"></div>
-      </div>
+    <div class="pos-preview-wrap">
+      <div id="posPaper" class="pos-paper w58"></div>
+    </div>
 
-      <div class="btns">
-        <button class="pos" id="posSysPrintBtn">🖨️ POS প্রিন্ট করুন</button>
-        <button class="sec" id="posBtBtn">📶 ব্লুটুথ (ESC/POS)</button>
-        <button class="sec" id="posImgShareBtn">🖼️ রিসিট ইমেজ শেয়ার</button>
-        <button class="sec" id="posCloseBtn">বন্ধ করুন</button>
-      </div>
+    <div class="btns">
+      <button class="pos" id="posSysPrintBtn">🖨️ POS প্রিন্ট করুন</button>
+      <button class="sec" id="posBtBtn">📶 ব্লুটুথ (ESC/POS)</button>
+      <button class="sec" id="posImgShareBtn">🖼️ রিসিট ইমেজ শেয়ার</button>
+      <button class="sec" id="posCloseBtn">বন্ধ করুন</button>
     </div>
   </div>
+</div>
 
-  <div id="msgModal" class="overlay" style="z-index: 80;">
-    <div class="box" style="max-width: 380px;">
-      <h2 id="msgTitle" style="margin:0 0 8px;font-size:1.05rem">বার্তা</h2>
-      <p id="msgText" style="margin:0 0 14px;font-size:.95rem"></p>
-      <div class="btns" id="msgBtns"></div>
-    </div>
+<div id="msgModal" class="overlay" style="z-index:80;">
+  <div class="box" style="max-width:380px;">
+    <h2 id="msgTitle" style="margin:0 0 8px;font-size:1.05rem">বার্তা</h2>
+    <p id="msgText" style="margin:0 0 14px;font-size:.95rem"></p>
+    <div class="btns" id="msgBtns"></div>
   </div>
+</div>
 
-  <script>
-    // ==========================================
-    // ১. PWA Service Worker এবং Install Prompt
-    // ==========================================
-    (function setupPWA() {
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', function() {
-          navigator.serviceWorker.register('./sw.js').catch(function() {});
-        });
-      }
-
-      var deferredPrompt = null;
-      var installBtn = document.getElementById('installBtn');
-      window.addEventListener('beforeinstallprompt', function(e) {
-        e.preventDefault();
-        deferredPrompt = e;
-        installBtn.style.display = 'inline-block';
+<script>
+/* =========================================================
+   ১. PWA: Service Worker, Install Prompt, Network Status
+   ========================================================= */
+(function setupPWA() {
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('./sw.js').catch(function (err) {
+        console.warn('SW register failed:', err);
       });
+    });
+  }
 
-      installBtn.addEventListener('click', async function() {
-        if (!deferredPrompt) return;
-        deferredPrompt.prompt();
-        var choice = await deferredPrompt.userChoice;
-        if (choice.outcome === 'accepted') {
-          installBtn.style.display = 'none';
-        }
-        deferredPrompt = null;
-      });
+  var deferredPrompt = null;
+  var installBtn = document.getElementById('installBtn');
 
-      window.addEventListener('appinstalled', function() {
-        installBtn.style.display = 'none';
-        deferredPrompt = null;
-      });
+  window.addEventListener('beforeinstallprompt', function (e) {
+    e.preventDefault();
+    deferredPrompt = e;
+    installBtn.style.display = 'inline-block';
+  });
 
-      function updateNetStatus() {
-        var el = document.getElementById('netStatus');
-        el.textContent = navigator.onLine ? 'অনলাইন' : 'অফলাইন মোড';
-      }
-      window.addEventListener('online', updateNetStatus);
-      window.addEventListener('offline', updateNetStatus);
-      updateNetStatus();
-    })();
+  installBtn.addEventListener('click', async function () {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    var choice = await deferredPrompt.userChoice;
+    if (choice.outcome === 'accepted') installBtn.style.display = 'none';
+    deferredPrompt = null;
+  });
 
-    // ==========================================
-    // ২. অ্যাপ সেটিংস এবং মূল লজিক
-    // ==========================================
-    var HOUSE = "বিশ্বাস ভবন", DEMAND_RATE = 42, LIFE_LIMIT = 50, LIFE_RATE = 4.63;
-    var SLABS = [
-      ["প্রথম ধাপ (০-৭৫)", 75, 5.26],
-      ["দ্বিতীয় ধাপ (৭৬-২০০)", 125, 8.50],
-      ["তৃতীয় ধাপ (২০১-৩০০)", 100, 9.10],
-      ["চতুর্থ ধাপ (৩০১-৪০০)", 100, 9.62],
-      ["পঞ্চম ধাপ (৪০১-৬০০)", 200, 15.01],
-      ["ষষ্ঠ ধাপ (৬০০+)", null, 17.35]
-    ];
+  window.addEventListener('appinstalled', function () {
+    installBtn.style.display = 'none';
+    deferredPrompt = null;
+  });
 
-    var $ = function(id) { return document.getElementById(id); };
-    var f2 = function(n) { return Number(n).toFixed(2); };
-    var r2 = function(n) { return Math.round(n * 100) / 100; };
-    var esc = function(s) {
-      return String(s).replace(/[&<>"']/g, function(c) {
-        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
-      });
+  function updateNetStatus() {
+    var el = document.getElementById('netStatus');
+    if (!el) return;
+    el.textContent = navigator.onLine ? 'অনলাইন' : 'অফলাইন মোড';
+  }
+  window.addEventListener('online', updateNetStatus);
+  window.addEventListener('offline', updateNetStatus);
+  updateNetStatus();
+})();
+
+/* =========================================================
+   ২. কনস্ট্যান্ট ও হেল্পার
+   ========================================================= */
+var HOUSE = 'বিশ্বাস ভবন';
+var DEMAND_RATE = 42;
+var LIFE_LIMIT = 50;
+var LIFE_RATE = 4.63;
+var SLABS = [
+  ['প্রথম ধাপ (০-৭৫)',     75,  5.26],
+  ['দ্বিতীয় ধাপ (৭৬-২০০)', 125, 8.50],
+  ['তৃতীয় ধাপ (২০১-৩০০)',  100, 9.10],
+  ['চতুর্থ ধাপ (৩০১-৪০০)', 100, 9.62],
+  ['পঞ্চম ধাপ (৪০১-৬০০)', 200, 15.01],
+  ['ষষ্ঠ ধাপ (৬০০+)',      null,17.35]
+];
+
+function $(id) { return document.getElementById(id); }
+function f2(n) { return Number(n).toFixed(2); }
+function r2(n) { return Math.round(n * 100) / 100; }
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, function (c) {
+    return { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c];
+  });
+}
+function today() {
+  var d = new Date();
+  return ('0'+d.getDate()).slice(-2) + '-' +
+         ('0'+(d.getMonth()+1)).slice(-2) + '-' + d.getFullYear();
+}
+
+/* =========================================================
+   ৩. স্টেট ও স্টোরেজ
+   ========================================================= */
+var current = null;
+var records = [];
+
+function store() {
+  try { localStorage.setItem('bills', JSON.stringify(records)); } catch (e) {}
+}
+function load() {
+  try { records = JSON.parse(localStorage.getItem('bills') || '[]'); }
+  catch (e) { records = []; }
+  if (!Array.isArray(records)) records = [];
+}
+
+/* =========================================================
+   ৪. মডাল
+   ========================================================= */
+function showAlert(msg, title) {
+  $('msgTitle').textContent = title || 'বিজ্ঞপ্তি';
+  $('msgText').textContent = msg;
+  $('msgBtns').innerHTML = '<button id="msgOkBtn">ঠিক আছে</button>';
+  $('msgModal').style.display = 'block';
+  $('msgOkBtn').onclick = function () { $('msgModal').style.display = 'none'; };
+}
+function showConfirm(msg, onYes) {
+  $('msgTitle').textContent = 'নিশ্চিত করুন';
+  $('msgText').textContent = msg;
+  $('msgBtns').innerHTML =
+    '<button class="del" id="msgYesBtn">হ্যাঁ, মুছুন</button>' +
+    '<button class="sec" id="msgNoBtn">বাতিল</button>';
+  $('msgModal').style.display = 'block';
+  $('msgYesBtn').onclick = function () {
+    $('msgModal').style.display = 'none';
+    onYes();
+  };
+  $('msgNoBtn').onclick = function () { $('msgModal').style.display = 'none'; };
+}
+
+/* =========================================================
+   ৫. ট্যারিফ ক্যালকুলেশন
+   ========================================================= */
+function energy(units) {
+  if (units <= 0) return { total: 0, rows: [] };
+  if (units <= LIFE_LIMIT) {
+    return {
+      total: units * LIFE_RATE,
+      rows: [{
+        name: 'লাইফ লাইন (০-৫০)',
+        units: r2(units), rate: LIFE_RATE, amount: r2(units * LIFE_RATE)
+      }]
     };
+  }
+  var rem = units, total = 0, rows = [];
+  for (var i = 0; i < SLABS.length && rem > 0; i++) {
+    var used = SLABS[i][1] === null ? rem : Math.min(rem, SLABS[i][1]);
+    var amt = used * SLABS[i][2];
+    rows.push({
+      name: SLABS[i][0], units: r2(used), rate: SLABS[i][2], amount: r2(amt)
+    });
+    total += amt;
+    rem -= used;
+  }
+  return { total: total, rows: rows };
+}
 
-    var current = null, records = [];
+/* =========================================================
+   ৬. বিল তৈরি
+   ========================================================= */
+function makeBill() {
+  var prev = parseFloat($('prev').value);
+  var curr = parseFloat($('curr').value);
+  if (isNaN(prev) || isNaN(curr)) return null;
+  if (curr < prev) return { error: 'বর্তমান ইউনিট পূর্বের ইউনিটের চেয়ে কম হতে পারে না' };
 
-    function showAlert(msg, title) {
-      $('msgTitle').textContent = title || 'বিজ্ঞপ্তি';
-      $('msgText').textContent = msg;
-      $('msgBtns').innerHTML = '<button id="msgOkBtn">ঠিক আছে</button>';
-      $('msgModal').style.display = 'block';
-      $('msgOkBtn').onclick = function() { $('msgModal').style.display = 'none'; };
-    }
+  var vatPct = parseFloat($('vat').value) || 0;
+  var other  = parseFloat($('other').value) || 0;
+  var load   = parseFloat($('load').value) || 0;
 
-    function showConfirm(msg, onYes) {
-      $('msgTitle').textContent = 'নিশ্চিত করুন';
-      $('msgText').textContent = msg;
-      $('msgBtns').innerHTML = '<button class="del" id="msgYesBtn">হ্যাঁ, মুছুন</button><button class="sec" id="msgNoBtn">বাতিল</button>';
-      $('msgModal').style.display = 'block';
-      $('msgYesBtn').onclick = function() { $('msgModal').style.display = 'none'; onYes(); };
-      $('msgNoBtn').onclick = function() { $('msgModal').style.display = 'none'; };
-    }
+  var units = r2(curr - prev);
+  var e = energy(units);
+  var demand = $('demand').checked ? load * DEMAND_RATE : 0;
+  var vat = (e.total + demand) * vatPct / 100;
 
-    function store() { try { localStorage.setItem('bills', JSON.stringify(records)); } catch (e) {} }
-    function load() { try { records = JSON.parse(localStorage.getItem('bills') || '[]'); } catch (e) { records = []; } }
+  return {
+    name: $('name').value.trim() || 'ভাড়াটিয়া',
+    date: today(),
+    prev: prev, curr: curr, units: units,
+    rows: e.rows,
+    vatPct: vatPct,
+    energy: r2(e.total),
+    demand: r2(demand),
+    vat: r2(vat),
+    other: r2(other),
+    total: r2(e.total + demand + vat + other),
+    load: load
+  };
+}
 
-    function energy(u) {
-      if (u <= 0) return { total: 0, rows: [] };
-      if (u <= LIFE_LIMIT) {
-        return {
-          total: u * LIFE_RATE,
-          rows: [{ name: 'লাইফ লাইন (০-৫০)', units: u, rate: LIFE_RATE, amount: r2(u * LIFE_RATE) }]
-        };
-      }
-      var rem = u, total = 0, rows = [];
-      for (var i = 0; i < SLABS.length && rem > 0; i++) {
-        var used = SLABS[i][1] === null ? rem : Math.min(rem, SLABS[i][1]);
-        var amt = used * SLABS[i][2];
-        rows.push({ name: SLABS[i][0], units: r2(used), rate: SLABS[i][2], amount: r2(amt) });
-        total += amt;
-        rem -= used;
-      }
-      return { total: total, rows: rows };
-    }
+/* =========================================================
+   ৭. বিল রেন্ডার
+   ========================================================= */
+function renderBill(r) {
+  var rows = r.rows.map(function (x) {
+    return '<tr><td>' + esc(x.name) + '</td>' +
+           '<td class="n">' + x.units + '</td>' +
+           '<td class="n">' + f2(x.rate) + '</td>' +
+           '<td class="n">' + f2(x.amount) + '</td></tr>';
+  }).join('');
 
-    function makeBill() {
-      var prev = parseFloat($('prev').value), curr = parseFloat($('curr').value);
-      if (isNaN(prev) || isNaN(curr)) return null;
-      if (curr < prev) return { error: 'বর্তমান ইউনিট পূর্বের ইউনিটের চেয়ে কম হতে পারে না' };
-      var vatPct = parseFloat($('vat').value) || 0, other = parseFloat($('other').value) || 0, load = parseFloat($('load').value) || 0;
-      var units = r2(curr - prev), e = energy(units);
-      var demand = $('demand').checked ? load * DEMAND_RATE : 0;
-      var vat = (e.total + demand) * vatPct / 100;
-      var d = new Date();
-      return {
-        name: $('name').value.trim() || 'ভাড়াটিয়া',
-        date: ('0' + d.getDate()).slice(-2) + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + d.getFullYear(),
-        prev: prev,
-        curr: curr,
-        units: units,
-        rows: e.rows,
-        vatPct: vatPct,
-        energy: r2(e.total),
-        demand: r2(demand),
-        vat: r2(vat),
-        other: r2(other),
-        total: r2(e.total + demand + vat + other)
-      };
-    }
+  var h = '';
+  h += '<div class="head"><b>' + HOUSE + '</b>বিদ্যুৎ বিল</div>';
+  h += '<div class="info"><span>ভাড়াটিয়া: <b>' + esc(r.name) + '</b></span>' +
+       '<span>তারিখ: ' + esc(r.date) + '</span></div>';
+  h += '<div class="info">' +
+         '<span>পূর্বের: ' + r.prev + '</span>' +
+         '<span>বর্তমান: ' + r.curr + '</span>' +
+         '<span>ব্যবহার: <b>' + r.units + ' ইউনিট</b></span>' +
+       '</div>';
+  h += '<div class="scroll"><table>' +
+       '<thead><tr><th>ধাপ</th><th class="n">ইউনিট</th>' +
+       '<th class="n">রেট</th><th class="n">টাকা</th></tr></thead><tbody>';
+  h += rows;
+  h += '<tr><td colspan="3">এনার্জি চার্জ</td>' +
+       '<td class="n">' + f2(r.energy) + '</td></tr>';
+  if (r.demand)
+    h += '<tr><td colspan="3">ডিমান্ড চার্জ</td>' +
+         '<td class="n">' + f2(r.demand) + '</td></tr>';
+  h += '<tr><td colspan="3">ভ্যাট (' + r.vatPct + '%)</td>' +
+       '<td class="n">' + f2(r.vat) + '</td></tr>';
+  if (r.other)
+    h += '<tr><td colspan="3">অন্যান্য চার্জ</td>' +
+         '<td class="n">' + f2(r.other) + '</td></tr>';
+  h += '<tr class="tot"><td colspan="3">মোট বিল</td>' +
+       '<td class="n">৳ ' + f2(r.total) + '</td></tr>';
+  h += '</tbody></table></div>';
 
-    function renderBill(r) {
-      var rows = r.rows.map(function(x) {
-        return '<tr><td>' + esc(x.name) + '</td><td class="n">' + x.units + '</td><td class="n">' + f2(x.rate) + '</td><td class="n">' + f2(x.amount) + '</td></tr>';
-      }).join('');
-      $('bill').innerHTML =
-        '<div class="head"><b>' + HOUSE + '</b>বিদ্যুৎ বিল</div>' +
-        '<div class="info"><span>ভাড়াটিয়া: <b>' + esc(r.name) + '</b></span><span>তারিখ: ' + esc(r.date) + '</span></div>' +
-        '<div class="info"><span>পূর্বের: ' + r.prev + '</span><span>বর্তমান: ' + r.curr + '</span><span>ব্যবহার: <b>' + r.units + ' ইউনিট</b></span></div>' +
-        '<div class="scroll"><table><thead><tr><th>ধাপ</th><th class="n">ইউনিট</th><th class="n">রেট</th><th class="n">টাকা</th></tr></thead><tbody>' + rows +
-        '<tr><td colspan="3">এনার্জি চার্জ</td><td class="n">' + f2(r.energy) + '</td></tr>' +
-        (r.demand ? '<tr><td colspan="3">ডিমান্ড চার্জ</td><td class="n">' + f2(r.demand) + '</td></tr>' : '') +
-        '<tr><td colspan="3">ভ্যাট (' + r.vatPct + '%)</td><td class="n">' + f2(r.va
+  $('bill').innerHTML = h;
+}
+
+/* =========================================================
+   ৮. প্রিভিউ আপডেট
+   ========================================================= */
+function updatePreview() {
+  var b = makeBill();
+  if (!b) {
+    current = null;
+    $('bill').innerHTML = '<p class="hint">পূর্বের ও বর্তমান ইউনিট লিখলেই বিল এখানে দেখাবে।</p>';
+    return;
+  }
+  if (b.error) {
+    current = null;
+    $('bill').innerHTML = '<p class="err">' + esc(b.error) + '</p>';
+    return;
+  }
+  current = b;
+  renderBill(b);
+}
+
+/* =========================================================
+   ৯. সংরক্ষিত হিসাব রেন্ডার
+   ========================================================= */
+function renderRecords() {
+  var tbody = $('recs');
+  if (!records.length) {
+    tbody.innerHTML 
